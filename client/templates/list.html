@@ -1,0 +1,14 @@
+<template name="TemplateList">
+  <div class="list-templates">
+    <h3>Templates</h3>
+    <ul>
+      {{#each templateList}}
+        <li><a href="/templates/edit/{{_id}}">{{name}}</a></li>
+      {{/each}}
+    </ul>
+
+    <a href="/templates/new">
+      New template
+    </a>
+  </div>
+</template>

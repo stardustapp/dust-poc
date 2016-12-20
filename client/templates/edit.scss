@@ -1,0 +1,45 @@
+.edit-template {
+  padding: 1em;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  header {
+    display: flex;
+    align-items: center;
+  }
+
+  .split-editor {
+    flex: 1;
+    display: flex;
+
+    .html-editor {
+      flex: 2;
+      border: 1px solid #f9f;
+    }
+    .css-editor {
+      flex: 1;
+      border: 1px solid #ff9;
+    }
+  }
+
+  .script-manager {
+    flex: 1;
+    display: flex;
+
+    .script-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .add-script {
+        display: flex;
+      }
+    }
+
+    .script-editor {
+      flex: 3;
+      border: 1px solid #9ff;
+    }
+  }
+}
