@@ -1,0 +1,7 @@
+<template name="TemplateRender">
+  {{#if compiledId}}
+    {{> Template.dynamic template=compiledId data=data}}
+  {{else}}
+    <div>rendering template...</div>
+  {{/if}}
+</template>

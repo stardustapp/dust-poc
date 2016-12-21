@@ -53,7 +53,7 @@ Template.TemplateEdit.onRendered ->
     editor.setSize '100%', '100%'
 
   # CALL THIS BEFORE SWAPPING ACTIVE SCRIPT KEY
-  @stashEditors = =>
+  @stashEditors = (cb) =>
     @data.html = @editors.html.getValue()
     @data.css = @editors.css.getValue()
 
@@ -71,8 +71,9 @@ Template.TemplateEdit.onRendered ->
             alert err.message
           else
             script.js = js
-
-      # TODO: complain
+            cb?()
+      else cb?()
+    else cb?()
 
   @autorun =>
     if sKey = @scriptKey.get()
@@ -93,26 +94,26 @@ Template.TemplateEdit.events
     evt.preventDefault()
 
     instance = Template.instance()
-    instance.stashEditors()
+    instance.stashEditors =>
 
-    if @_id
-      existing = DB.Template.findOne {@_id}
-      if existing.version != @version - 1
-        alert 'The template has been edited by someone else. Reload and try again'
-        return
-    else
-      @name = instance.$('.name').val() || null
-
-    try
-      isNew = not @_id
-      @save()
-      if isNew
-        Router.go "/templates/edit/#{@_id}"
+      if @_id
+        existing = DB.Template.findOne {@_id}
+        if existing.version != @version - 1
+          alert 'The template has been edited by someone else. Reload and try again'
+          return
       else
-        @version += 1 # start another draft
-        
-    catch err
-      alert err.message
+        @name = instance.$('.name').val() || null
+
+      try
+        isNew = not @_id
+        @save()
+        if isNew
+          Router.go "/templates/edit/#{@_id}"
+        else
+          @version += 1 # start another draft
+
+      catch err
+        alert err.message
 
   'click .select-script': (evt) ->
     evt.preventDefault()
