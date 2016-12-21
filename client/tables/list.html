@@ -1,0 +1,17 @@
+<template name="TableList">
+  <div class="list-tables">
+    <h3>Tables</h3>
+    <ul>
+      {{#each tableList}}
+        <li>
+          <a href="/tables/view/{{_id}}">{{name}}</a>
+          ({{hashKey}}, {{sortKey}})
+        </li>
+      {{/each}}
+    </ul>
+
+    <a href="/tables/new">
+      New table
+    </a>
+  </div>
+</template>

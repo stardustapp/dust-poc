@@ -1,5 +1,6 @@
 root.DB = {}
 
+
 DB.TemplateScriptType = Astro.Enum.create
   name: 'TemplateScriptType'
   identifiers: [
@@ -27,3 +28,15 @@ DB.Template = Astro.Class.create
     html      : type: String
     css       : type: String, optional: true
     scripts   : type: [DB.TemplateScript], defaultValue: []
+
+
+DB.Tables = new Mongo.Collection 'tables'
+DB.Table = Astro.Class.create
+  name: 'Table'
+  collection: DB.Tables
+  secured: false
+  fields:
+    name      : type: String
+    hashKey   : type: String
+    sortKey   : type: String, optional: true
+    #fields    : type: [DB.TableField], defaultValue: []
