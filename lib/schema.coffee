@@ -40,3 +40,15 @@ DB.Table = Astro.Class.create
     hashKey   : type: String
     sortKey   : type: String, optional: true
     #fields    : type: [DB.TableField], defaultValue: []
+
+
+DB.Records = new Mongo.Collection 'records'
+DB.Record = Astro.Class.create
+  name: 'Record'
+  collection: DB.Records
+  secured: false
+  fields:
+    table     : type: String
+    hashKey   : type: String
+    sortKey   : type: String, optional: true
+    data      : type: Object

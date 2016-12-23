@@ -52,7 +52,7 @@ window.compileTemplate = (templateId) ->
 
   templ.scripts.forEach ({key, type, param, js}) ->
     try
-      inner = eval(js)()
+      inner = eval(js).apply(window.scriptHelpers)
     catch err
       console.log "Couldn't compile", key, "for", name, '-', err
       return

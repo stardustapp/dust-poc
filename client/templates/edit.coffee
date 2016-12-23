@@ -10,6 +10,11 @@ Router.route '/templates/edit/:_id', ->
   {_id} = @params
   template = DB.Template.findOne {_id},
     reactive: false
+
+  # no template yet? be reactive
+  unless template
+    return DB.Template.findOne {_id}
+
   template.version += 1 # it's a draft
 
   @render 'TemplateEdit',
@@ -64,7 +69,8 @@ Template.TemplateEdit.onRendered ->
         # We get a lot of tabs.
         fixedCoffee = script.coffee.replace(/\t/g, '  ')
         if fixedCoffee isnt script.coffee
-          @editors.coffee.setValue script
+          @editors.coffee.setValue fixedCoffee
+          script.coffee = fixedCoffee
 
         Meteor.call 'compileCoffee', script.coffee, 'function', (err, js) =>
           if err
@@ -159,3 +165,6 @@ Template.TemplateEdit.events
     instance.stashEditors()
     instance.scriptDep.changed() # update script list
     instance.scriptKey.set script.key
+
+    # Reset the addition UI
+    evt.target.param.value = ''

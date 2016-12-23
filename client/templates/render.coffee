@@ -4,7 +4,8 @@ Template.TemplateRender.onCreated ->
 Template.TemplateRender.onRendered ->
   # TODO: clean up compiled templates
   @autorun =>
-    @compiledId.set compileTemplate(@data.id)
+    data = Template.currentData()
+    @compiledId.set compileTemplate(data.id)
 
 Template.TemplateRender.helpers
   compiledId: ->

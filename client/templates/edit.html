@@ -2,9 +2,15 @@
   <section class="edit-template">
     <header>
       {{#if _id}}
-        <h2>Edit Template {{name}}</h2>
+        <h2>
+          <a href="/templates">Templates</a> /
+          Edit `{{name}}`
+        </h2>
       {{else}}
-        <h2>New Template</h2>
+        <h2>
+          <a href="/templates">Templates</a> /
+          New Template
+        </h2>
         <input type="text" class="name" placeholder="Template Name">
       {{/if}}
 
