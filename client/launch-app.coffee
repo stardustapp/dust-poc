@@ -1,6 +1,6 @@
-Router.route '/~:_id/:path(.*)', ->
-  {_id, path} = @params
-  app = DB.App.findOne _id
+Router.route '/~:appId/:path(.*)', ->
+  {appId, path} = @params
+  app = DB.App.findOne appId
   return unless app
   Session.set 'app id', app._id
 
@@ -20,7 +20,7 @@ Router.route '/~:_id/:path(.*)', ->
 
   match = route.url.exec(path)
   template = DB.Template.findOne
-    packageId: _id
+    packageId: appId
     name: route.templateName
   # TODO: 500
 
