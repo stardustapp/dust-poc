@@ -1,18 +1,19 @@
 <template name="TemplateEdit">
   <section class="edit-template">
     <header>
-      {{#if _id}}
-        <h2>
-          <a href="/templates">Templates</a> /
+      <h2>
+        <a href="/packages">Packages</a> /
+        <a href="/packages/view/{{packageId}}">Package</a> /
+        {{#if _id}}
           Edit `{{name}}`
-        </h2>
-      {{else}}
-        <h2>
-          <a href="/templates">Templates</a> /
+        {{else}}
           New Template
-        </h2>
+        {{/if}}
+      </h2>
+
+      {{#unless _id}}
         <input type="text" class="name" placeholder="Template Name">
-      {{/if}}
+      {{/unless}}
 
       <button class="save-template">SAVE TEMPLATE</button>
     </header>

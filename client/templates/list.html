@@ -2,12 +2,16 @@
   <div class="list-templates">
     <h3>Templates</h3>
     <ul>
-      {{#each templateList}}
-        <li><a href="/templates/edit/{{_id}}">{{name}}</a></li>
+      {{#each tmpl in templateList}}
+        <li>
+          <a href="/packages/{{packageId}}/templates/edit/{{tmpl._id}}">
+            {{tmpl.name}}
+          </a>
+        </li>
       {{/each}}
     </ul>
 
-    <a href="/templates/new">
+    <a href="/packages/{{packageId}}/templates/new">
       New template
     </a>
   </div>

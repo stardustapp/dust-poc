@@ -24,10 +24,34 @@ DB.Template = Astro.Class.create
   secured: false
   fields:
     version   : type: Number
+    packageId : type: String
     name      : type: String
     html      : type: String
     css       : type: String, optional: true
-    scripts   : type: [DB.TemplateScript], defaultValue: []
+    scripts   : type: [DB.TemplateScript]
+
+
+DB.Packages = new Mongo.Collection 'packages'
+DB.Package = Astro.Class.create
+  name: 'Package'
+  collection: DB.Packages
+  typeField: 'type'
+  secured: false
+  fields:
+    name      : type: String
+    license   : type: String
+    libraries : type: [String]
+    # author    : type: String
+    # privacy   : type: String, default: 'public'
+
+DB.App = DB.Package.inherit
+  name: 'App'
+  fields:
+    iconUrl   : type: String, optional: true
+    layoutId  : type: String, optional: true
+
+DB.Library = DB.Package.inherit
+  name: 'Library'
 
 
 DB.Tables = new Mongo.Collection 'tables'
@@ -36,7 +60,10 @@ DB.Table = Astro.Class.create
   collection: DB.Tables
   secured: false
   fields:
+    packageId : type: String
     name      : type: String
+    dataScope : type: String, optional: true
+          # global, group, user
     hashKey   : type: String
     sortKey   : type: String, optional: true
     #fields    : type: [DB.TableField], defaultValue: []
@@ -48,7 +75,10 @@ DB.Record = Astro.Class.create
   collection: DB.Records
   secured: false
   fields:
-    table     : type: String
+    packageId : type: String
+    tableId   : type: String
+    scope     : type: String
+          # global, group:asdf, user:qwert
     hashKey   : type: String
     sortKey   : type: String, optional: true
     data      : type: Object

@@ -3,4 +3,4 @@ Router.route '/templates', ->
 
 Template.TemplateList.helpers
   templateList: ->
-    DB.Template.find()
+    DB.Template.find({@packageId})
