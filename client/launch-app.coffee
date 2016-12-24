@@ -1,3 +1,7 @@
+Template.body.helpers
+  currentApp: ->
+    DB.App.findOne Session.get 'app id'
+
 Router.route '/~:appId/:path(.*)', ->
   {appId, path} = @params
   app = DB.App.findOne appId
