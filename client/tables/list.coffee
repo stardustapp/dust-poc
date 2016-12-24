@@ -3,4 +3,4 @@ Router.route '/tables', ->
 
 Template.TableList.helpers
   tableList: ->
-    DB.Table.find()
+    DB.Table.find({@packageId})

@@ -2,15 +2,15 @@
   <div class="list-tables">
     <h3>Tables</h3>
     <ul>
-      {{#each tableList}}
+      {{#each tbl in tableList}}
         <li>
-          <a href="/tables/view/{{_id}}">{{name}}</a>
-          (hash: {{hashKey}}, sort: {{sortKey}})
+          <a href="/packages/{{packageId}}/tables/view/{{tbl._id}}">{{tbl.name}}</a>
+          (hash: {{tbl.hashKey}}, sort: {{tbl.sortKey}})
         </li>
       {{/each}}
     </ul>
 
-    <a href="/tables/new">
+    <a href="/packages/{{packageId}}/tables/new">
       New table
     </a>
   </div>
