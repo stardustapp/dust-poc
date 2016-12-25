@@ -54,6 +54,21 @@ DB.Library = DB.Package.inherit
   name: 'Library'
 
 
+DB.Routes = new Mongo.Collection 'routes'
+DB.Route = Astro.Class.create
+  name: 'Route'
+  collection: DB.Routes
+  secured: false
+  fields:
+    version   : type: Number
+    packageId : type: String
+    path      : type: String
+    name      : type: String, optional: true
+
+    actionCoffee : type: String
+    actionJs     : type: String
+
+
 DB.Tables = new Mongo.Collection 'tables'
 DB.Table = Astro.Class.create
   name: 'Table'
@@ -81,4 +96,5 @@ DB.Record = Astro.Class.create
           # global, group:asdf, user:qwert
     hashKey   : type: String
     sortKey   : type: String, optional: true
+          # TODO: this should really be a number, date, string, etc
     data      : type: Object

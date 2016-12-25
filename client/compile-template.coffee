@@ -61,12 +61,15 @@ window.compileTemplate = (templateId) ->
       inner.apply(@, arguments)
     catch err
       stack = err.stack.split('Object.eval')[0]
-      [_, lineNum, charNum] = err.stack.match(/<anonymous>:(\d+):(\d+)/)
-      stack += "#{key} (#{lineNum}:#{charNum} for view #{templ._id})"
-      console.log stack
+      [_, lineNum, charNum] = err.stack.match(/<anonymous>:(\d+):(\d+)/) ? []
+      if lineNum?
+        stack += "#{key} (#{lineNum}:#{charNum} for view #{templ._id})"
+        console.log stack
 
-      line = js.split('\n')[lineNum-1]
-      console.log 'Responsible line:', line
+        line = js.split('\n')[lineNum-1]
+        console.log 'Responsible line:', line
+      else
+        console.log err.stack
 
       # TODO: report error
 

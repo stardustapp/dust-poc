@@ -27,7 +27,9 @@ class Table
 
   insertDoc: (doc) ->
     rec = new DB.Record
+      packageId: @meta.packageId
       tableId: @meta._id
+      scope: 'global' # TODO!
       hashKey: doc[@meta.hashKey]
       data: doc
 
@@ -42,7 +44,11 @@ class Table
 # Simple caching
 TABLES = {}
 
-root.scriptHelpers =
+root.DUST = root.scriptHelpers =
 
   getTable: (name) ->
     TABLES[name] ?= new Table(name)
+
+  navigateTo: (path) ->
+    APP_ROOT = "/~#{Session.get 'app id'}"
+    Router.go APP_ROOT + path
