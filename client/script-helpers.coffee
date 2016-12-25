@@ -13,6 +13,14 @@ class Table
       hashKey: hashKey
     ?.data
 
+  # Find single doc by hashKey and sortKey
+  findByHashSortKey: (hashKey, sortKey) ->
+    DB.Record.findOne
+      tableId: @meta()._id
+      hashKey: hashKey
+      sortKey: sortKey
+    ?.data
+
   # List child docs by sortKey
   queryByHashKey: (hashKey) ->
     DB.Record.find
@@ -40,7 +48,7 @@ class Table
       throw new Error "
         Hash key #{@meta().hashKey} is required for #{@meta().name}"
 
-    if @meta.sortKey
+    if @meta().sortKey
       unless rec.sortKey = doc[@meta().sortKey]
         throw new Error "
           Sort key #{@meta().sortKey} is required for #{@meta().name}"
