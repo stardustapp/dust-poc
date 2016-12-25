@@ -1,4 +1,4 @@
-Router.route '/packages/:packageId/templates/new', ->
+Router.route '/~~/packages/:packageId/templates/new', ->
   template = new DB.Template
     packageId: @params.packageId
     version: 1
@@ -7,7 +7,7 @@ Router.route '/packages/:packageId/templates/new', ->
   @render 'TemplateEdit',
     data: -> template
 
-Router.route '/packages/:packageId/templates/edit/:_id', ->
+Router.route '/~~/packages/:packageId/templates/edit/:_id', ->
   {_id, packageId} = @params
   template = DB.Template.findOne {_id, packageId},
     reactive: false
@@ -115,7 +115,7 @@ Template.TemplateEdit.events
         isNew = not @_id
         @save()
         if isNew
-          Router.go "/packages/#{@packageId}/templates/edit/#{@_id}"
+          Router.go "/~~/packages/#{@packageId}/templates/edit/#{@_id}"
         else
           @version += 1 # start another draft
 

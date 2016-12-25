@@ -1,5 +1,5 @@
-Router.route '/tables', ->
-  @render 'TableList'
+#Router.route '/~~/tables', ->
+#  @render 'TableList'
 
 Template.TableList.helpers
   tableList: ->

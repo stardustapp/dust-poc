@@ -1,4 +1,4 @@
-Router.route '/packages/view/:_id', ->
+Router.route '/~~/packages/view/:_id', ->
   {_id} = @params
 
   @render 'PackageView',

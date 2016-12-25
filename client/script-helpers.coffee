@@ -50,5 +50,6 @@ root.DUST = root.scriptHelpers =
     TABLES[name] ?= new Table(name)
 
   navigateTo: (path) ->
+    # TODO
     APP_ROOT = "/~#{Session.get 'app id'}"
     Router.go APP_ROOT + path

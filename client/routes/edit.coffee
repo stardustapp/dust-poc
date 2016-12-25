@@ -1,4 +1,4 @@
-Router.route '/packages/:packageId/routes/new', ->
+Router.route '/~~/packages/:packageId/routes/new', ->
   route = new DB.Route
     packageId: @params.packageId
     version: 1
@@ -7,7 +7,7 @@ Router.route '/packages/:packageId/routes/new', ->
   @render 'RouteEdit',
     data: -> route
 
-Router.route '/packages/:packageId/routes/edit/:_id', ->
+Router.route '/~~/packages/:packageId/routes/edit/:_id', ->
   {_id, packageId} = @params
   route = DB.Route.findOne {_id, packageId},
     reactive: false
@@ -68,7 +68,7 @@ Template.RouteEdit.events
         isNew = not @_id
         @save()
         if isNew
-          Router.go "/packages/#{@packageId}/routes/edit/#{@_id}"
+          Router.go "/~~/packages/#{@packageId}/routes/edit/#{@_id}"
         else
           @version += 1 # start another draft
 

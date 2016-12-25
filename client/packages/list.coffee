@@ -1,4 +1,4 @@
-Router.route '/packages', ->
+Router.route '/~~/packages', ->
   @render 'PackageList'
 
 Template.PackageList.helpers

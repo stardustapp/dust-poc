@@ -4,13 +4,13 @@
     <ul>
       {{#each tbl in tableList}}
         <li>
-          <a href="/packages/{{packageId}}/tables/view/{{tbl._id}}">{{tbl.name}}</a>
+          <a href="/~~/packages/{{packageId}}/tables/view/{{tbl._id}}">{{tbl.name}}</a>
           (hash: {{tbl.hashKey}}, sort: {{tbl.sortKey}})
         </li>
       {{/each}}
     </ul>
 
-    <a href="/packages/{{packageId}}/tables/new">
+    <a href="/~~/packages/{{packageId}}/tables/new">
       New table
     </a>
   </div>

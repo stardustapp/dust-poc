@@ -4,14 +4,14 @@
     <ul>
       {{#each app in appList}}
         <li>
-          <a href="/packages/view/{{app._id}}">{{app.name}}</a>
-          -
+          <a href="/~~/packages/view/{{app._id}}">{{app.name}}</a>
+          - {{! TODO: USE HELPER FOR LAUNCH URL }}
           <a href="/~{{app._id}}/home" target="_blank">launch</a>
         </li>
       {{/each}}
     </ul>
 
-    <a href="/packages/new-app">
+    <a href="/~~/packages/new-app">
       New app
     </a>
 
@@ -21,12 +21,12 @@
     <ul>
       {{#each lib in libraryList}}
         <li>
-          <a href="/packages/view/{{lib._id}}">{{lib.name}}</a>
+          <a href="/~~/packages/view/{{lib._id}}">{{lib.name}}</a>
         </li>
       {{/each}}
     </ul>
 
-    <a href="/packages/new-library">
+    <a href="/~~/packages/new-library">
       New library
     </a>
   </div>

@@ -1,4 +1,4 @@
-Router.route '/packages/:packageId/tables/new', ->
+Router.route '/~~/packages/:packageId/tables/new', ->
   table = new DB.Table
     packageId: @params.packageId
 
@@ -15,7 +15,7 @@ Template.TableNew.events
 
     try
       @save()
-      Router.go "/packages/#{@packageId}/tables/view/#{@_id}"
+      Router.go "/~~/packages/#{@packageId}/tables/view/#{@_id}"
 
     catch err
       alert err.message

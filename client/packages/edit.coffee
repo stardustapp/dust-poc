@@ -1,17 +1,17 @@
-Router.route '/packages/new-app', ->
+Router.route '/~~/packages/new-app', ->
   @render 'PackageEdit', data: ->
     new DB.App
       license: 'MIT'
       libraries: []
 
-Router.route '/packages/new-library', ->
+Router.route '/~~/packages/new-library', ->
   @render 'PackageEdit', data: ->
     new DB.Library
-      _id: Random.id()
+      _id: Random.id().toLowerCase()
       license: 'MIT'
       libraries: []
 
-Router.route '/packages/edit/:_id', ->
+Router.route '/~~/packages/edit/:_id', ->
   {_id} = @params
   pkg = DB.Package.findOne {_id},
     reactive: false
@@ -38,7 +38,7 @@ Template.PackageEdit.events
 
     try
       @save()
-      Router.go "/packages/view/#{@_id}"
+      Router.go "/~~/packages/view/#{@_id}"
 
     catch err
       alert err.message
