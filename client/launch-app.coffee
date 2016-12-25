@@ -1,10 +1,31 @@
+# Detect appId from hostname
+getAppFromHost = ->
+  baseHost = Meteor.absoluteUrl().split('/')[2]
+  fullHost = location.host
+
+  # Make sure we're APPID.the-platform.com format
+  baseIdx = fullHost.length - baseHost.length
+  return unless baseIdx > 1
+  return unless fullHost.lastIndexOf(baseHost) is baseIdx
+
+  appId = fullHost.slice 0, baseIdx-1
+  return if '.' in appId
+  appId
+
+root.APP_ID = getAppFromHost()
+console.log 'Detected app from hostname:', APP_ID
+
+# Allow <a href=...> tags in apps to do the right thing
 Template.body.helpers
   currentApp: ->
     DB.App.findOne Session.get 'app id'
+  appBase: ->
+    if APP_ID then '/'
+    else "/~#{@_id}/"
 
-Router.route '/~:appId/:path(.*)', ->
+
+launchApp = (appId) ->
   # Get the app straight, first
-  {appId, path} = @params
   app = DB.App.findOne appId
   return unless app
   Session.set 'app id', app._id
@@ -19,9 +40,13 @@ Router.route '/~:appId/:path(.*)', ->
     r.url = new Iron.Url r.path
 
   # Find the first matching route
+  {path} = @params
+  path ||= '/home'
   route = routes.find (r) -> r.url.test(path)
-  return unless route
-  # TODO: 404
+  unless route
+    console.log 'No app route matched', path
+    return
+    # TODO: 404
 
   # Build params mapping
   match = route.url.exec(path)
@@ -52,3 +77,15 @@ Router.route '/~:appId/:path(.*)', ->
       @render compileTemplate(template._id), opts
 
   inner.apply(ctx)
+
+if APP_ID
+  # https://the-app.the-platform/blah
+  # DANGER: this route will eat any 404
+  # TODO: 404 if the app doesn't have the route
+  Router.route '/:path(.*)', ->
+    launchApp.call @, APP_ID
+
+else
+  # https://the-platform/~the-app/blah
+  Router.route '/~:appId/:path(.*)', ->
+    launchApp.call @, @params.appId
