@@ -33,6 +33,10 @@ class Table
       hashKey: doc[@meta.hashKey]
       data: doc
 
+    unless rec.hashKey
+      throw new Error "
+        Hash key #{@meta.hashKey} is required for #{@meta.name}"
+
     if @meta.sortKey
       unless rec.sortKey = doc[@meta.sortKey]
         throw new Error "
