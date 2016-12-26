@@ -10,7 +10,7 @@
   }
 
   .split-editor {
-    flex: 1;
+    flex: 2;
     display: flex;
 
     .html-editor {
@@ -34,6 +34,13 @@
 
       .add-script {
         display: flex;
+
+        [name=param] {
+          height: 1.5rem;
+          margin: 0;
+          flex: 1;
+          max-width: 8em;
+        }
       }
     }
 

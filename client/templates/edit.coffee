@@ -40,12 +40,14 @@ Template.TemplateEdit.onRendered ->
       theme: 'neo'
       tabSize: 2
       value: @data.html ? '<div>\n  Hello World\n</div>'
+      lineWrapping: true
 
     coffee: CodeMirror @$('.script-editor')[0],
       lineNumbers: true
       mode: 'coffeescript'
       theme: 'neo'
       tabSize: 2
+      lineWrapping: true
 
     css: CodeMirror @$('.css-editor')[0],
       lineNumbers: true
@@ -53,6 +55,7 @@ Template.TemplateEdit.onRendered ->
       theme: 'neo'
       tabSize: 2
       value: @data.css ? '.canvas {\n  \n}'
+      lineWrapping: true
 
   # We are our own page, we have room
   for _, editor of @editors
