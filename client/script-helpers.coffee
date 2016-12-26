@@ -1,3 +1,7 @@
+class Document
+  constructor: (@table, @record) ->
+    console.log @table, @record
+
 class Table
   constructor: (@name) ->
 
@@ -5,6 +9,22 @@ class Table
     unless @_meta ?= DB.Table.findOne {@name}
       throw new Error "No such table #{@name}"
     return @_meta
+
+  # Find single doc by hashKey and sortKey if any
+  findOne: (hashKey, sortKey) ->
+    mongoFilter =
+      tableId: @meta()._id
+      hashKey: hashKey
+
+    if @_meta().sortKey
+      mongoFilter.sortKey = sortKey
+      unless sortKey
+        throw new Error "Sort key #{@_meta().sortKey} required for #{@name}"
+    unless hashKey
+      throw new Error "Sort key #{@_meta().sortKey} required for #{@name}"
+
+    if record = DB.Record.findOne(mongoFilter)
+      new Document(@, record)
 
   # Find single doc by hashKey
   findByHashKey: (hashKey) ->
