@@ -15,7 +15,7 @@ Meteor.methods '/repo/install-package': (packageId) ->
   # Clean out existing records
   if DB.Package.findOne packageId
     console.info 'Deleting existing package resources'
-    DB.Package.remove({packageId})
+    DB.Package.remove(packageId)
     DB.Route.remove({packageId})
     DB.Table.remove({packageId})
     DB.Template.remove({packageId})
@@ -37,7 +37,7 @@ Meteor.methods '/repo/install-package': (packageId) ->
     )._id
     delete pkg.meta.layoutName
 
-  DB.Package.insert pkg.meta
+  DB[pkg.meta.type].insert pkg.meta
 
   console.info 'Done installing package!'
   return 'Installed'

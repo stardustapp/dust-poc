@@ -9,7 +9,7 @@ Template.PackageInstall.onCreated ->
 
   Meteor.call '/repo/list-packages', (err, cb) =>
     if err
-      alert "Can't refresh packages\n\n" + err.stack
+      alert "Can't refresh packages\n\n" + err.message
     else
       @available.set cb
 
@@ -36,7 +36,7 @@ Template.PackageInstall.events
 
     Meteor.call '/repo/get-package-meta', @packageId, (err, cb) =>
       if err
-        alert "Can't get metadata for #{@packageId}\n\n" + err.stack
+        alert "Can't get metadata for #{@packageId}\n\n" + err.message
         stage.set 'select'
       else if @packageId is packageId.get()
         meta.set cb
@@ -47,7 +47,7 @@ Template.PackageInstall.events
     stage.set 'installing'
     Meteor.call '/repo/install-package', packageId.get(), (err, cb) =>
       if err
-        alert "Can't install #{packageId.get()}\n\n" + err.stack
+        alert "Can't install #{packageId.get()}\n\n" + err.message
         stage.set 'precheck'
       else
         stage.set 'installed'
