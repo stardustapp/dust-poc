@@ -1,4 +1,5 @@
 Meteor.methods 'publish package': (packageId) ->
+  check packageId, String
   s3 = new AWS.S3
 
   stripIds = (o) ->
