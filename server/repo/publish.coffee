@@ -9,6 +9,7 @@ Meteor.methods 'publish package': (packageId) ->
 
   console.info 'Preparing to publish package', packageId, '...'
   pkg =
+    _version: 1
     packageId: packageId
     meta: DB.Package.findOne(packageId)
     routes: DB.Route.find({packageId}).map(stripIds)
@@ -27,8 +28,9 @@ Meteor.methods 'publish package': (packageId) ->
     delete pkg.meta.layoutId
 
   console.info 'Serializing package contents...'
-  metaPkg = JSON.stringify(pkg.meta, null, 2)
   fullPkg = JSON.stringify(pkg, null, 2)
+  pkg.meta.platformVersion = pkg._version
+  metaPkg = JSON.stringify(pkg.meta, null, 2)
 
   # TODO: only reupload meta if changed
   console.info 'Uploading package metadata...'

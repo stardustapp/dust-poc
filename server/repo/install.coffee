@@ -12,6 +12,10 @@ Meteor.methods '/repo/install-package': (packageId) ->
   console.info 'Parsing package'
   pkg = JSON.parse Body
 
+  if pkg._version > 1
+    throw new Meteor.Error 'unsupported-version',
+      "This package is built for a newer version of Stardust"
+
   # Clean out existing records
   if DB.Package.findOne packageId
     console.info 'Deleting existing package resources'
