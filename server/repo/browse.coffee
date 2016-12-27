@@ -10,7 +10,7 @@ Meteor.methods '/repo/list-packages': ->
     throw new Meteor.Error 'truncated', 'More than 500 packages seen'
 
   Contents
-    .filter ({Key}) -> Key.endsWith('-meta.json')
+    .filter ({Key}) -> Key.endsWith('.meta.json')
     .map (obj) ->
       packageId: obj.Key.slice(9,-10)
       updatedAt: obj.LastModified
@@ -21,6 +21,6 @@ Meteor.methods '/repo/get-package-meta': (packageId) ->
 
   {Body} = s3.getObjectSync
     Bucket: 'stardust-repo'
-    Key: "packages/#{packageId}-meta.json"
+    Key: "packages/#{packageId}.meta.json"
 
   JSON.parse Body
