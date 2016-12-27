@@ -16,6 +16,10 @@ root.APP_ID = getAppFromHost()
 console.log 'Detected app from hostname:', APP_ID
 
 # TODO: subscribe to either entire app or system-wide config
+if APP_ID
+  root.SUBSCRIPTION = Meteor.subscribe '/app-runtime', APP_ID
+else
+  root.SUBSCRIPTION = Meteor.subscribe '/management'
 
 # Allow <a href=...> tags in apps to do the right thing
 Template.body.helpers
