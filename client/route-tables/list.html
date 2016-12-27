@@ -1,0 +1,17 @@
+<template name="RouteTableList">
+  <div class="list-route-tables">
+    <h3>Route tables</h3>
+    <ul>
+      {{#each rt in routeTableList}}
+        <li>
+          <a href="/~~/packages/{{packageId}}/route-tables/edit/{{rt._id}}">
+            {{rt.name}}</a>
+        </li>
+      {{/each}}
+    </ul>
+
+    <a href="/~~/packages/{{packageId}}/route-tables/new">
+      New route table
+    </a>
+  </div>
+</template>

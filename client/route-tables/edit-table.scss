@@ -1,11 +1,6 @@
-.new-route {
+.list-routes {
   padding: 1em;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
-  .action-editor {
-    flex-basis: 20em;
-    align-self: stretch;
-  }
 }

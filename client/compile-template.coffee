@@ -10,7 +10,7 @@ Blaze.Template.prototype.registerHook = (key, hook) ->
   @hooks[key] = hook
 
 window.compileTemplate = (templateId) ->
-  templ = DB.Templates.findOne templateId, fields:
+  templ = DB.Template.findOne templateId, fields:
     html: 1
     css: 1
     scripts: 1

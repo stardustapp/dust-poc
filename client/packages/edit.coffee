@@ -21,9 +21,6 @@ Router.route '/~~/packages/edit/:_id', ->
 
 
 Template.PackageEdit.helpers
-  templates: ->
-    DB.Template.find
-      packageId: @_id
 
 Template.PackageEdit.events
   'submit form': (evt) ->
@@ -34,7 +31,6 @@ Template.PackageEdit.events
     @license = evt.target.license.value || null
     # @libraries = [] # TODO
     @iconUrl = evt.target.iconUrl?.value || null
-    @layoutId = evt.target.layoutId?.value || null
 
     try
       @save()

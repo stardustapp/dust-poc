@@ -36,18 +36,6 @@
           name="iconUrl"
           placeholder="Icon URL"
           value={{iconUrl}}>
-
-      <select name="layoutId" value={{name}}>
-        <option value="">No App-wide Layout</option>
-
-        {{#each tmpl in templates}}
-          <option
-              value={{tmpl._id}}
-              selected={{eq layoutId tmpl._id}}>
-            {{tmpl.name}}
-          </option>
-        {{/each}}
-      </select>
     {{/if}}
 
     <button type="submit">Update package</button>

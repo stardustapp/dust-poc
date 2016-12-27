@@ -12,36 +12,67 @@ Meteor.methods '/repo/install-package': (packageId) ->
   console.info 'Parsing package'
   pkg = JSON.parse Body
 
-  if pkg._version > 1
+  # TODO: take this out once we're in 2017
+  # it's literally supporting only 2 legacy packages
+  pkg._version ?= 1
+
+  if pkg._version is 1
+    console.log "Migrating package #{packageId}, v1 => v2"
+    oldPkg = pkg
+    pkg =
+      _version: 2
+      meta: oldPkg.meta
+      resources: []
+
+    # Combine all the routes into a table
+    if oldPkg.routes.length or oldPkg.meta.layoutName
+      pkg.resources.push
+        name: 'RootRoutes'
+        type: 'RouteTable'
+        version: 1
+        layout: oldPkg.meta.layoutName
+        entries: oldPkg.routes.map (r) ->
+          path: r.path
+          type: 'customAction'
+          customAction:
+            coffee: r.actionCoffee
+            js:     r.actionJs
+    # remove layoutName from meta
+    delete pkg.meta.layoutName
+
+    for table in oldPkg.tables
+      table.version = 1
+      table.type = 'Table'
+      delete table.dataScope # the world wasn't ready yet
+      pkg.resources.push table
+
+    for template in oldPkg.templates
+      template.type = 'Template'
+      delete template.dataScope # the world wasn't ready yet
+      pkg.resources.push template
+  #-- end version 1 migration
+
+  if pkg._version isnt 2
     throw new Meteor.Error 'unsupported-version',
-      "This package is built for a newer version of Stardust"
+      "This package is built for a newer or incompatible version of Stardust (#{pkg._version})"
+
+  # TODO: install dependencies
 
   # Clean out existing records
   if DB.Package.findOne packageId
     console.info 'Deleting existing package resources'
     DB.Package.remove(packageId)
-    DB.Route.remove({packageId})
-    DB.Table.remove({packageId})
-    DB.Template.remove({packageId})
+    DB.Resources.remove({packageId})
 
-  addId = (o) ->
-    o.packageId = packageId
-    return o
-
-  console.info 'Creating new package resources'
-  pkg.routes.map(addId).forEach (o) -> DB.Route.insert o
-  pkg.tables.map(addId).forEach (o) -> DB.Table.insert o
-  pkg.templates.map(addId).forEach (o) -> DB.Template.insert o
-
+  # Store package metadata first
   pkg.meta._id = packageId
-  if pkg.meta.layoutName
-    pkg.meta.layoutId = DB.Template.findOne(
-      name: pkg.meta.layoutName
-      packageId: packageId
-    )._id
-    delete pkg.meta.layoutName
-
   DB[pkg.meta.type].insert pkg.meta
+
+  # Create new resources
+  console.info 'Creating new package resources'
+  for resource in pkg.resources
+    resource.packageId = packageId
+    DB[resource.type].insert resource
 
   console.info 'Done installing package!'
   return 'Installed'
