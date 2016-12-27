@@ -8,7 +8,7 @@ DB.Record = Astro.Class.create
   secured: false
   fields:
     packageId : type: String
-    tableId   : type: String
+    table     : type: String
     scope     : type: String
           # global, group:asdf, user:qwert
     hashKey   : type: String

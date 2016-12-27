@@ -13,7 +13,8 @@ class Table
   # Find single doc by hashKey and sortKey if any
   findOne: (hashKey, sortKey) ->
     mongoFilter =
-      tableId: @meta()._id
+      packageId: @meta().packageId
+      table: @meta().name
       hashKey: hashKey
 
     if @_meta().sortKey
@@ -29,14 +30,16 @@ class Table
   # Find single doc by hashKey
   findByHashKey: (hashKey) ->
     DB.Record.findOne
-      tableId: @meta()._id
+      packageId: @meta().packageId
+      table: @meta().name
       hashKey: hashKey
     ?.data
 
   # Find single doc by hashKey and sortKey
   findByHashSortKey: (hashKey, sortKey) ->
     DB.Record.findOne
-      tableId: @meta()._id
+      packageId: @meta().packageId
+      table: @meta().name
       hashKey: hashKey
       sortKey: sortKey
     ?.data
@@ -44,7 +47,8 @@ class Table
   # List child docs by sortKey
   queryByHashKey: (hashKey) ->
     DB.Record.find
-      tableId: @meta()._id
+      packageId: @meta().packageId
+      table: @meta().name
       hashKey: hashKey
     , sort: {sortKey: 1}
     .map (rec) -> rec.data
@@ -52,14 +56,15 @@ class Table
   # List all docs
   scan: ->
     DB.Record.find
-      tableId: @meta()._id
+      packageId: @meta().packageId
+      table: @meta().name
     , sort: {sortKey: 1}
     .map (rec) -> rec.data
 
   insertDoc: (doc) ->
     rec = new DB.Record
       packageId: @meta().packageId
-      tableId: @meta()._id
+      table: @meta().name
       scope: 'global' # TODO!
       hashKey: doc[@meta().hashKey]
       data: doc

@@ -15,6 +15,8 @@ getAppFromHost = ->
 root.APP_ID = getAppFromHost()
 console.log 'Detected app from hostname:', APP_ID
 
+# TODO: subscribe to either entire app or system-wide config
+
 # Allow <a href=...> tags in apps to do the right thing
 Template.body.helpers
   currentApp: ->
