@@ -34,25 +34,41 @@ Template.RouteTableEdit.helpers
     Template.instance().routes.list()
 
   isSelected: ->
-    @path is Template.instance().selected.get()
+    @path? and @path is Template.instance().selected.get()
 
   hasSelection: ->
-    !!Template.instance().selected.get()
+    !!Template.instance().selected.get()?
 
   # Called by entry editor with new version or nothing to cancel
   applyEdit: ->
     {selected, routes} = Template.instance()
     (newRoute) ->
 
+      # Cancels will pass null
+      unless newRoute?
+        # Null routes just get removed
+        if selected.get() is ''
+          idx = routes.findIndex (r) => r.path is ''
+          if idx isnt -1
+            routes.splice idx, 1
+
+        selected.set null
+        return
+
+      # Blank paths can't be saved
+      if selected.get() is '' and !newRoute.path.length
+        alert "Path is required for routes"
+        return
+
+      # If path is changed, make sure it's available
       if selected.get() != newRoute.path
-        # Path is different. Make sure it's available
         if routes.some((r) => r.path is newRoute.path)
           alert "Path fragment #{newRoute.path} already exists in table"
           return
 
       # Replace route with new object
       idx = routes.findIndex (r) => r.path is selected.get()
-      if idx > 0
+      if idx isnt -1
         routes.splice idx, 1, newRoute
         selected.set(null)
 
@@ -70,7 +86,7 @@ Template.RouteTableEdit.events
       isNew = not @_id
       @save()
       if isNew
-        Router.go "/~~/packages/#{@packageId}/rout-tables/edit/#{@_id}"
+        Router.go "/~~/packages/#{@packageId}/route-tables/edit/#{@_id}"
       else
         @version += 1 # start another draft
 
@@ -79,8 +95,19 @@ Template.RouteTableEdit.events
 
   'click .add-entry': (evt) ->
     evt.preventDefault()
+    {routes, selected} = Template.instance()
 
-    Template.instance().routes.push {}
+    # Check for null route first
+    idx = routes.findIndex (r) => r.path is ''
+    if idx isnt -1
+      alert "There is already a blank route, won't add another"
+      return
+
+    # Add/select new null route
+    routes.push
+      path: ''
+      type: 'template'
+    selected.set ''
 
   ##############################
   # actions on existing routes
