@@ -5,6 +5,13 @@
 Meteor.publish '/app-runtime', (packageId) ->
   check packageId, String
 
+  if packageId is 'build'
+    # TODO: this is effectively auto-publish
+    return [
+      DB.App.find()
+      DB.Resource.find()
+    ]
+
   # TODO: this is effectively auto-publish
   #       just scoped to the current app
   [
