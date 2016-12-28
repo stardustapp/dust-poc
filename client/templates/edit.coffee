@@ -49,12 +49,12 @@ Template.TemplateEdit.onRendered ->
       tabSize: 2
       lineWrapping: true
 
-    css: CodeMirror @$('.css-editor')[0],
+    scss: CodeMirror @$('.scss-editor')[0],
       lineNumbers: true
-      mode: 'css'
+      mode: 'text/x-scss'
       theme: 'neo'
       tabSize: 2
-      value: @data.css ? '.canvas {\n  \n}'
+      value: @data.scss ? @data.css ? '.canvas {\n  \n}'
       lineWrapping: true
 
   # We are our own page, we have room
@@ -64,7 +64,7 @@ Template.TemplateEdit.onRendered ->
   # CALL THIS BEFORE SWAPPING ACTIVE SCRIPT KEY
   @stashEditors = (cb) =>
     @data.html = @editors.html.getValue()
-    @data.css = @editors.css.getValue()
+    @data.scss = @editors.scss.getValue()
 
     if sKey = @scriptKey.get()
       if script = @data.scripts.filter((s) -> s.key is sKey)[0]
@@ -116,11 +116,13 @@ Template.TemplateEdit.events
 
       try
         isNew = not @_id
-        @save()
-        if isNew
-          Router.go "/~~/packages/#{@packageId}/templates/edit/#{@_id}"
-        else
-          @version += 1 # start another draft
+        @save (err) =>
+          if err
+            alert err
+          else if isNew
+            Router.go "/~~/packages/#{@packageId}/templates/edit/#{@_id}"
+          else
+            @version += 1 # start another draft
 
       catch err
         alert err.message

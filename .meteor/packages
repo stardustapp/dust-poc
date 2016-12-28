@@ -33,3 +33,4 @@ session
 peerlibrary:aws-sdk
 check
 manuel:reactivearray
+barbatus:scss-compiler

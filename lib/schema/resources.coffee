@@ -75,4 +75,10 @@ DB.Template = DB.Resource.inherit
   fields:
     html      : type: String
     css       : type: String, optional: true
+    scss      : type: String, optional: true
     scripts   : type: [DB.TemplateScript]
+  events:
+    beforeSave: (evt) -> if Meteor.isServer
+      evt.target.css = if evt.target.scss
+        compileSass(evt.target.scss, 'scss')
+      else null
