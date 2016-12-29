@@ -51,13 +51,19 @@ window.compileTemplate = (templateId) ->
 
   # register template for outside hooking
   unless DUST._liveTemplates.has templ.name
-    DUST._liveTemplates.set templ.name, new Set()
+    DUST._liveTemplates.set templ.name,
+      dep: new Tracker.Dependency()
+      instances: new Set()
   liveSet = DUST._liveTemplates.get templ.name
 
   # init hook system
   Template[name].hooks = {}
-  Template[name].onCreated ->   liveSet.add @
-  Template[name].onDestroyed -> liveSet.delete @
+  Template[name].onCreated ->
+    liveSet.instances.add @
+    liveSet.dep.changed()
+  Template[name].onDestroyed ->
+    liveSet.instances.delete @
+    liveSet.dep.changed()
 
   templ.scripts.forEach ({key, type, param, js}) ->
     try

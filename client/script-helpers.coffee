@@ -88,14 +88,18 @@ root.DUST = root.scriptHelpers =
   _liveTemplates: new Map
 
   triggerHook: (hookName, args...) ->
-    if set = DUST._liveTemplates.get(DUST._mainTemplate)
-      if set.size is 1
-        if instance = set.values().next().value
+    if liveSet = DUST._liveTemplates.get(DUST._mainTemplate)
+      liveSet.dep.depend()
+      {instances} = liveSet
+      if instances.size is 1
+        if instance = instances.values().next().value
           instance.hook hookName, args...
-      else if set.size is 0
-        console.warn "Hook", hookName, "can't be called - no live template"
+      else if instances.size is 0
+        console.warn "Hook", hookName,
+            "can't be called - no live template"
       else
-        console.warn "Hook", hookName, "can't be called -", set.size, "live templates"
+        console.warn "Hook", hookName,
+            "can't be called -", instances.size, "live templates"
 
   params: new ReactiveVar {}
 
