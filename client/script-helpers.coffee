@@ -86,6 +86,8 @@ TABLES = {}
 
 root.DUST = root.scriptHelpers =
 
+  params: new ReactiveVar {}
+
   getTable: (name) ->
     TABLES[name] ?= new Table(name)
 

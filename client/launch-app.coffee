@@ -72,6 +72,7 @@ launchApp = (appId) ->
     params[param.name] = match[idx + 1]
 
   # Context for route actions to leverage
+  DUST.params.set params
   ctx =
     params: params
 
