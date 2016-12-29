@@ -1,5 +1,6 @@
 # Call a hook on an instance
 Blaze.TemplateInstance.prototype.hook = (key, args...) ->
+  check key, String
   {hooks} = @view.template
   hooks[key]?.apply @, args
 
@@ -11,6 +12,7 @@ Blaze.Template.prototype.registerHook = (key, hook) ->
 
 window.compileTemplate = (templateId) ->
   templ = DB.Template.findOne templateId, fields:
+    name: 1
     html: 1
     css: 1
     scripts: 1
@@ -47,8 +49,15 @@ window.compileTemplate = (templateId) ->
     Session.set 'is loading', true
   ###
 
+  # register template for outside hooking
+  unless DUST._liveTemplates.has templ.name
+    DUST._liveTemplates.set templ.name, new Set()
+  liveSet = DUST._liveTemplates.get templ.name
+
   # init hook system
   Template[name].hooks = {}
+  Template[name].onCreated ->   liveSet.add @
+  Template[name].onDestroyed -> liveSet.delete @
 
   templ.scripts.forEach ({key, type, param, js}) ->
     try

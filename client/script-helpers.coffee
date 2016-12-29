@@ -85,6 +85,17 @@ class Table
 TABLES = {}
 
 root.DUST = root.scriptHelpers =
+  _liveTemplates: new Map
+
+  triggerHook: (hookName, args...) ->
+    if set = DUST._liveTemplates.get(DUST._mainTemplate)
+      if set.size is 1
+        if instance = set.values().next().value
+          instance.hook hookName, args...
+      else if set.size is 0
+        console.warn "Hook", hookName, "can't be called - no live template"
+      else
+        console.warn "Hook", hookName, "can't be called -", set.size, "live templates"
 
   params: new ReactiveVar {}
 

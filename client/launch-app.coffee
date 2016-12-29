@@ -81,10 +81,13 @@ launchApp = (appId) ->
       template = DB.Template.findOne
         packageId: appId
         name: templateName ? route.Name
-      # TODO: 500
 
-      opts.data ?= {params}
-      @render compileTemplate(template._id), opts
+      if template
+        opts.data ?= {params}
+        DUST._mainTemplate = template.name
+        @render compileTemplate(template._id), opts
+      else
+        alert 'Template to render not found: ' + templateName
 
   # Perform the actual action
   switch route.type
