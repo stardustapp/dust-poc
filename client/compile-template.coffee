@@ -22,11 +22,11 @@ window.compileTemplate = (templateId) ->
   if name of Template
     return name
 
-  source = [
-    templ.html,
-    "<style type='text/css'>#{templ.css}</style>"
-  ].join '\n\n'
+  parts = [templ.html]
+  if templ.css
+    parts.push "<style type='text/css'>#{templ.css}</style>"
 
+  source = parts.join '\n\n'
   try
     compiled = SpacebarsCompiler.compile source,
       isTemplate: true
