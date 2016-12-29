@@ -12,10 +12,6 @@ Meteor.methods '/repo/install-package': (packageId) ->
   console.info 'Parsing package'
   pkg = JSON.parse Body
 
-  # TODO: take this out once we're in 2017
-  # it's literally supporting only 2 legacy packages
-  pkg._version ?= 1
-
   if pkg._version is 1
     console.log "Migrating package #{packageId}, v1 => v2"
     oldPkg = pkg
@@ -52,7 +48,14 @@ Meteor.methods '/repo/install-package': (packageId) ->
       pkg.resources.push template
   #-- end version 1 migration
 
-  if pkg._version isnt 2
+  if pkg._version is 2
+    pkg.resources
+      .filter (r) -> r.type is 'Template'
+      .forEach (r) -> r.scss ?= r.css
+    pkg._version = 3
+  #-- end version 2 migration
+
+  if pkg._version isnt 3
     throw new Meteor.Error 'unsupported-version',
       "This package is built for a newer or incompatible version of Stardust (#{pkg._version})"
 

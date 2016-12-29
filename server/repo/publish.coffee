@@ -5,7 +5,7 @@ Meteor.methods 'publish package': (packageId) ->
   console.info 'Preparing to publish package', packageId, '...'
   pkg =
     _platform: 'stardust'
-    _version: 2
+    _version: 3
     packageId: packageId
     meta: DB.Package.findOne(packageId)
     resources: DB.Resource.find({packageId}).map (r) ->
