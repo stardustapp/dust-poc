@@ -16,14 +16,14 @@ DB.Resource.extend meteorMethods:
           Can't commit resource for unknown package #{@packageId}"
 
     # If name is new, make sure it's not taken
-    if @name isnt newDoc.name
+    if @name isnt newDoc.name or @_isNew
       @name = newDoc.name
       if DB.Resource.findOne({@packageId, @name})
         throw new Meteor.Error 'name-conflict', "
            #{@packageId} already has a resource named #{@name}"
 
     # Check for a version match
-    else if @version isnt newDoc.version
+    if @version isnt newDoc.version
       console.log 'Client sent version', newDoc.version,
         'of', @packageId, @name,
         '- latest is', @version, '- rejecting'
