@@ -10,7 +10,7 @@ DB.Resource = Astro.Class.create
   typeField: 'type'
   secured: false
   fields:
-    packageId : type: String
+    packageId : type: String, immutable: true
     name      : type: String
     version   : type: Number
     # injects   : type: [String]
@@ -20,8 +20,8 @@ DB.Table = DB.Resource.inherit
   fields:
     #dataScope : type: String, optional: true
           # global, group, user
-    hashKey   : type: String
-    sortKey   : type: String, optional: true
+    hashKey   : type: String, immutable: true
+    sortKey   : type: String, immutable: true, optional: true
     # fields    : type: [DB.TableField], defaultValue: []
 
 
