@@ -56,7 +56,7 @@ launchApp = (appId) ->
       # TODO: 500
 
   # Find the first matching route
-  {path} = @params
+  {path, query} = @params
   path ||= '/home'
   route = routeTable.entries.find (r) -> r.url.test(path)
   unless route
@@ -67,7 +67,7 @@ launchApp = (appId) ->
 
   # Build params mapping
   match = route.url.exec(path)
-  params = {}
+  params = JSON.parse JSON.stringify query # TODO
   route.url.keys.forEach (param, idx) ->
     params[param.name] = match[idx + 1]
 
