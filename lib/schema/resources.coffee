@@ -49,7 +49,7 @@ DB.RouteTable = DB.Resource.inherit
   name: 'RouteTable'
   fields:
     layout    : type: String, optional: true
-    entries   : type: [DB.RouteTableEntry]
+    entries   : type: [DB.RouteTableEntry], default: []
 
 ################
 ## UI Templates
@@ -76,7 +76,7 @@ DB.Template = DB.Resource.inherit
     html      : type: String
     css       : type: String, optional: true
     scss      : type: String, optional: true
-    scripts   : type: [DB.TemplateScript]
+    scripts   : type: [DB.TemplateScript], default: []
   events:
     beforeSave: (evt) -> if Meteor.isServer
       evt.target.css = if evt.target.scss
