@@ -73,7 +73,7 @@ DB.TemplateScript = Astro.Class.create
 DB.Template = DB.Resource.inherit
   name: 'Template'
   fields:
-    html      : type: String
+    html      : type: String, default: '<div>\n  Hello World\n</div>'
     css       : type: String, optional: true
     scss      : type: String, optional: true
     scripts   : type: [DB.TemplateScript], default: []
