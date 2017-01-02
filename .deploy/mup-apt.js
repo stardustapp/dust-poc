@@ -1,8 +1,8 @@
 module.exports = {
   servers: {
-    one: {
-      host: 'ec2-54-218-73-71.us-west-2.compute.amazonaws.com',
-      username: 'ubuntu',
+    apartment: {
+      host: 'dan-lenovo',
+      username: 'stardust',
       pem: '/home/daniel/.ssh/stardust.pem',
     },
   },
@@ -11,13 +11,13 @@ module.exports = {
     name: 'stardust',
     path: '..',
     servers: {
-      one: {},
+      apartment: {},
     },
     buildOptions: {
       serverOnly: true,
     },
     env: {
-      ROOT_URL: 'https://withstardust.tech',
+      ROOT_URL: 'http://apt.danopia.net',
       MONGO_URL: 'mongodb://localhost/meteor'
     },
 
@@ -29,7 +29,7 @@ module.exports = {
     oplog: true,
     port: 27017,
     servers: {
-      one: {},
+      apartment: {},
     },
   },
 };
