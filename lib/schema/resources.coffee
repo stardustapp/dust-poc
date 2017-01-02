@@ -82,3 +82,35 @@ DB.Template = DB.Resource.inherit
       evt.target.css = if evt.target.scss
         compileSass(evt.target.scss, 'scss')
       else null
+
+##########################
+## Custom Record Classes
+
+DB.TemplateScriptType = Astro.Enum.create
+  name: 'TemplateScriptType'
+  identifiers: [
+    'on-render', 'on-create', 'on-destroy',
+    'helper', 'event', 'hook'
+  ]
+
+# TODO: check that Type resolves
+DB.RecordField = Astro.Class.create
+  name: 'RecordField'
+  fields:
+    key      : type: String
+    type     : type: String
+      # core:string/number/boolean/date/object or custom
+    isList   : type: Boolean, default: false
+    optional : type: Boolean, default: false
+    immutable: type: Boolean, default: false
+    default  : type: String, optional: true # as [E]JSON string
+    # TODO: enum, transient, mapping
+
+# TODO: don't let these rename
+# TODO: check that Base resolves
+DB.CustomRecord = DB.Resource.inherit
+  name: 'CustomRecord'
+  fields:
+    base      : type: String, default: 'core:Record'
+    dataScope : type: String, default: 'global' # or group or user
+    fields    : type: [DB.RecordField], default: []

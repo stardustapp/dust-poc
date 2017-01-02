@@ -83,6 +83,8 @@ class Table
 
 # Simple caching
 TABLES = {}
+INJECTOR = new DustInjector
+  packageId: APP_ID
 
 root.DUST = root.scriptHelpers =
   _liveTemplates: new Map
@@ -102,6 +104,9 @@ root.DUST = root.scriptHelpers =
             "can't be called -", instances.size, "live templates"
 
   params: new ReactiveVar {}
+
+  get: (name, type) ->
+    INJECTOR.get(name, type)
 
   getTable: (name) ->
     TABLES[name] ?= new Table(name)

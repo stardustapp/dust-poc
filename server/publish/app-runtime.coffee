@@ -16,6 +16,6 @@ Meteor.publish '/app-runtime', (packageId) ->
   #       just scoped to the current app
   [
     DB.App.find _id: packageId
-    DB.Resource.find {packageId}
-    DB.Record.find {packageId}
+    DB.Resources.find {packageId}
+    DB.Records.find {packageId}
   ]
