@@ -113,3 +113,8 @@ DB.CustomRecord = DB.Resource.inherit
     base      : type: String, default: 'core:Record'
     dataScope : type: String, default: 'global' # or group or user
     fields    : type: [DB.RecordField], default: []
+
+    # Behaviors
+    # TODO: need to be dynamic, w/ helpers
+    timestamp : type: Boolean, default: false
+    slugField : type: String, optional: true

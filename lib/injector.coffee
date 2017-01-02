@@ -74,6 +74,13 @@ root.DustInjector = class DustInjector
         default: -> if field.default
           JSON.parse field.default
 
+    behaviors: {}
+    if res.timestamp
+      behaviors.timestamp = {}
+    if res.slugField?
+      behaviors.slug =
+        fieldName: res.slugField
+
     base = @get res.base, 'CustomRecord'
     clazz = base.inherit
       name: res.name
@@ -85,5 +92,6 @@ root.DustInjector = class DustInjector
         #  evt.currentTarget.scope = 'global' # TODO
         beforeFind: (evt) =>
           evt.selector.packageId = @packageId
+      behaviors: behaviors
 
     clazz

@@ -42,6 +42,8 @@ iron:middleware-stack@1.1.0
 iron:router@1.0.13
 iron:url@1.0.11
 jagi:astronomy@2.3.11
+jagi:astronomy-slug-behavior@3.0.0
+jagi:astronomy-timestamp-behavior@2.0.0
 jquery@1.11.10
 launch-screen@1.1.0
 livedata@1.0.18

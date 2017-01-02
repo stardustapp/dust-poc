@@ -34,3 +34,5 @@ peerlibrary:aws-sdk
 check
 manuel:reactivearray
 barbatus:scss-compiler
+jagi:astronomy-timestamp-behavior
+jagi:astronomy-slug-behavior
