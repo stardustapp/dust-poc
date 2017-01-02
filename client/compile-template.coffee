@@ -84,7 +84,7 @@ window.compileTemplate = (templateId) ->
         line = js.split('\n')[lineNum-1]
         console.log 'Responsible line:', line
       else
-        console.log err.stack
+        console.log err
 
       # TODO: report error
 
