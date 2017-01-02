@@ -12,29 +12,37 @@ getAppFromHost = ->
   return if '.' in appId
   appId
 
-root.APP_ID = getAppFromHost()
-console.log 'Detected app from hostname:', APP_ID
+getAppFromPath = ->
+  if firstPart = location.pathname.split('/')[1]
+    if firstPart[0] is '~'
+      return firstPart.slice(1)
+
+if root.APP_ID = getAppFromHost()
+  root.SUBDOMAIN_APPS = true
+else if root.APP_ID = getAppFromPath()
+  root.SUBDOMAIN_APPS = false
+
+console.log 'Detected app from URL:', APP_ID
 
 # TODO: subscribe to either entire app or system-wide config
 if APP_ID
   root.SUBSCRIPTION = Meteor.subscribe '/app-runtime', APP_ID
-else
-  root.SUBSCRIPTION = Meteor.subscribe '/management'
+#else
+#  root.SUBSCRIPTION = Meteor.subscribe '/management'
 
 # Allow <a href=...> tags in apps to do the right thing
 Template.body.helpers
   currentApp: ->
-    DB.App.findOne Session.get 'app id'
+    DB.App.findOne APP_ID
   appBase: ->
-    if APP_ID then '/'
-    else "/~#{@_id}/"
+    if SUBDOMAIN_APPS then '/'
+    else "/~#{APP_ID}/"
 
 
 launchApp = (appId) ->
   # Get the app straight, first
   app = DB.App.findOne appId
   return unless app
-  Session.set 'app id', app._id
 
   # Fetch the app's root routing table
   routeTable = DB.RouteTable.findOne
@@ -105,14 +113,15 @@ launchApp = (appId) ->
 
       inner.apply(ctx)
 
-if APP_ID
+if SUBDOMAIN_APPS
   # https://the-app.the-platform/blah
   # DANGER: this route will eat any 404
   # TODO: 404 if the app doesn't have the route
   Router.route '/:path(.*)', ->
     launchApp.call @, APP_ID
 
-else
+else if APP_ID
   # https://the-platform/~the-app/blah
-  Router.route '/~:appId/:path(.*)', ->
-    launchApp.call @, @params.appId
+  # Let the client reload when switching apps
+  Router.route "/~#{APP_ID}/:path(.*)", ->
+    launchApp.call @, APP_ID

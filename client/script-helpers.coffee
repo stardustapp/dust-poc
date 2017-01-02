@@ -107,8 +107,9 @@ root.DUST = root.scriptHelpers =
     TABLES[name] ?= new Table(name)
 
   navigateTo: (path) ->
-    if APP_ID # app is in subdomain
+    if SUBDOMAIN_APPS # app is in subdomain
       Router.go path
-    else
-      APP_ROOT = "/~#{Session.get 'app id'}"
+    else if APP_ID
+      APP_ROOT = "/~#{APP_ID}"
       Router.go APP_ROOT + path
+    else alert "I don't know where to take you."
