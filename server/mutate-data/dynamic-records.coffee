@@ -16,8 +16,13 @@ Meteor.methods '/records/commit': (newDoc) ->
       "Can't commit record for unknown package #{newDoc.packageId}"
 
   injector = getInjector(newDoc.packageId)
-  clazz = injector.get newDoc.type, 'CustomRecord'
+  {final, type} = injector.load(newDoc.type, 'CustomRecord')
+  if type isnt 'CustomRecord'
+    throw new Meteor.Error 'dag-failed',
+      "Expected #{newDoc.type} to be a CustomRecord but got #{type}"
+  clazz = final
 
+  isNew = not newDoc.version
   if newDoc.version
     rec = clazz.findOne
       packageId: newDoc.packageId
@@ -43,5 +48,10 @@ Meteor.methods '/records/commit': (newDoc) ->
     rec.version = 0
 
   rec.version += 1
-  console.log 'Storing version', rec.version, '-', rec
   rec.save()
+  console.log 'Stored version', rec.version, 'of', rec._id,
+    'type', rec.type, 'pkg', rec.packageId
+
+  version: rec.version
+  id: rec._id
+  isNew: isNew

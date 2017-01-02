@@ -14,7 +14,7 @@ root.DustInjector = class DustInjector
   # package:name - from a dep
   # ($name - system resource?)
   load: (name) ->
-    console.log 'injecting', name
+    #console.log 'injecting', name
 
     if ':' in name
       [pkg, subName] = name.split(':')
