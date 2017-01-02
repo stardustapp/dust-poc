@@ -6,7 +6,6 @@ DB.Record = Astro.Class.create
   name: 'Record'
   collection: DB.Records
   typeField: 'type'
-  secured: false
   fields:
     packageId : type: String, immutable: true
     #table     : type: String, optional: true

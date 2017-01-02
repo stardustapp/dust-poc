@@ -8,7 +8,6 @@ DB.Resource = Astro.Class.create
   name: 'Resource'
   collection: DB.Resources
   typeField: 'type'
-  secured: false
   fields:
     packageId : type: String, immutable: true
     name      : type: String
