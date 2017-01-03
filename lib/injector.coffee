@@ -46,9 +46,11 @@ root.DustInjector = class DustInjector
               data = {}
               inSmartTag = true
               for key, val of attrs
-                #console.log key, val.constructor
                 if val.constructor is Function
-                  data[key] = val()()
+                  val2 = val()
+                  # TODO: when is this an array?
+                  val2 = val2[0] if val2.length
+                  data[key] = val2()
                 else data[key] = val
               inSmartTag = false
               return data
@@ -75,16 +77,16 @@ root.DustInjector = class DustInjector
   # package:name - from a dep
   # ($name - system resource?)
   load: (name) ->
-    console.group 'Injecting', name
+    console.group? 'Injecting', name
 
     if ':' in name
       [pkg, subName] = name.split(':')
       if val = BUILTINS[pkg]?[subName]
         console.log 'Using builtin'
-        console.groupEnd()
+        console.groupEnd?()
         return val
 
-      console.groupEnd()
+      console.groupEnd?()
       throw new Meteor.Error 'not-found',
         "Failed to inject #{name} - builtin does not exist"
 
@@ -93,7 +95,7 @@ root.DustInjector = class DustInjector
       name: name
 
     unless resource
-      console.groupEnd()
+      console.groupEnd?()
       throw new Meteor.Error 'not-found',
         "Failed to inject #{name} - name could not be resolved"
 
@@ -103,11 +105,11 @@ root.DustInjector = class DustInjector
       when 'Template'
         Template[compileTemplate(resource)]
       else
-        console.groupEnd()
+        console.groupEnd?()
         throw new Meteor.Error 'not-implemented',
           "#{name} was a #{resource.type} but I have no recipe for that"
 
-    console.groupEnd()
+    console.groupEnd?()
     type: resource.type
     final: final
 
