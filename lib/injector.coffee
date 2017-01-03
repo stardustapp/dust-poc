@@ -40,10 +40,9 @@ root.DustInjector = class DustInjector
 
           console.log 'Providing tag', name, 'with', attrs#, contents
           parentData = Template.currentData()
-          inner = Spacebars.include(template, -> contents)
 
           if attrs
-            Blaze._TemplateWith ->
+            Blaze.With ->
               data = {}
               inSmartTag = true
               for key, val of attrs
@@ -52,11 +51,12 @@ root.DustInjector = class DustInjector
                   data[key] = val()()
                 else data[key] = val
               inSmartTag = false
-              #console.log 'giving data', data
               return data
             , ->
-              Blaze._TemplateWith (-> parentData), (-> inner)
-          else inner
+              Spacebars.include template, ->
+                Blaze.With (-> parentData), (-> contents)
+          else
+            Spacebars.include(template, -> contents)
 
   startInvalidator: ->
     DB.Resources
