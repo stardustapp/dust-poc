@@ -53,15 +53,7 @@ launchApp = (appId) ->
 
   # Apply app-wide layout if any
   if routeTable.layout
-    template = DB.Template.findOne
-      packageId: appId
-      name: routeTable.layout
-
-    # Make sure the layout is actually known
-    if template._id
-      @layout compileTemplate(template._id)
-    else
-      # TODO: 500
+    @layout DUST.get(routeTable.layout, 'Template').dynName
 
   # Find the first matching route
   {path, query} = @params
@@ -86,16 +78,10 @@ launchApp = (appId) ->
 
     # Compiles requested template then actually renders
     render: (templateName, opts={}) =>
-      template = DB.Template.findOne
-        packageId: appId
-        name: templateName ? route.Name
-
-      if template
-        opts.data ?= {params}
-        DUST._mainTemplate = template.name
-        @render compileTemplate(template._id), opts
-      else
-        alert 'Template to render not found: ' + templateName
+      template = DUST.get (templateName ? route.Name), 'Template'
+      opts.data ?= {params}
+      DUST._mainTemplate = template.baseName
+      @render template.dynName, opts
 
   # Perform the actual action
   switch route.type

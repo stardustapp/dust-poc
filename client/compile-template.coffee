@@ -10,13 +10,14 @@ Blaze.Template.prototype.registerHook = (key, hook) ->
     throw new Meteor.Error 'hook-exists', "Template hook already exists"
   @hooks[key] = hook
 
-window.compileTemplate = (templateId) ->
-  templ = DB.Template.findOne templateId, fields:
-    name: 1
-    html: 1
-    css: 1
-    scripts: 1
-    version: 1
+window.compileTemplate = (templ) ->
+  unless templ.html?
+    templ = DB.Template.findOne templ, fields:
+      name: 1
+      html: 1
+      css: 1
+      scripts: 1
+      version: 1
   return unless templ?.html
   name = ['Tmpl', templ._id, templ.version].join '_'
 
@@ -32,6 +33,10 @@ window.compileTemplate = (templateId) ->
   try
     compiled = SpacebarsCompiler.compile source,
       isTemplate: true
+
+    # Little monkeypatching never hurt anyone
+    compiled = compiled.replace /HTML\.getTag\("/g,
+      'HTML.getSmartTag(view, "'
 
     renderer = eval(compiled)
     UI.Template.__define__ name, renderer
@@ -120,4 +125,6 @@ window.compileTemplate = (templateId) ->
     Session.set 'display-context', {}
   ###
 
+  Template[name].baseName = templ.name
+  Template[name].dynName = name
   return name

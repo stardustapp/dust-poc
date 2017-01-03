@@ -3,10 +3,71 @@ BUILTINS =
     Record:
       type: 'CustomRecord' # TODO
       final: DB.Record
+    Class:
+      type: 'CustomRecord' # TODO
+      final: Astro.Class.create(name: 'core:Class')
 
 root.DustInjector = class DustInjector
   constructor: ({@packageId}) ->
     @cache = new Map
+    @startInvalidator()
+
+    # TODO: move somewhere else, use global injector
+    if Meteor.isClient
+      # how bad is this?
+      realMustache = Spacebars.mustache.bind(Spacebars)
+      inSmartTag = false
+      Spacebars.mustache = (thing...) ->
+        if inSmartTag then thing else realMustache(thing...)
+
+      HTML.getSmartTag = (view, name) =>
+        return HTML.getTag(name) unless ':' in name
+        # remove arbitrary pkglocal prefix from spacebars
+        if name.slice(0, 3) is 'my:'
+          name = name.slice(3)
+
+        template = @get name, 'Template'
+        (args...) ->
+          attrs = null
+          contents = null
+          if args[0]?.constructor in [HTML.Attrs, Object]
+            [attrs, contents...] = args
+          else
+            contents = args
+
+          #if attrs?.constructor is HTML.Attrs
+            # TODO: flatten the attrs
+
+          console.log 'Providing tag', name, 'with', attrs#, contents
+          parentData = Template.currentData()
+          inner = Spacebars.include(template, -> contents)
+
+          if attrs
+            Blaze._TemplateWith ->
+              data = {}
+              inSmartTag = true
+              for key, val of attrs
+                #console.log key, val.constructor
+                if val.constructor is Function
+                  data[key] = val()()
+                else data[key] = val
+              inSmartTag = false
+              #console.log 'giving data', data
+              return data
+            , ->
+              Blaze._TemplateWith (-> parentData), (-> inner)
+          else inner
+
+  startInvalidator: ->
+    DB.Resources
+      .find {@packageId}, fields: {name: 1, version: 1}
+      .observe
+        changed: (doc) =>
+          console.log 'Invalidating resource', doc.name
+          @cache.delete doc.name
+        removed: (doc) =>
+          console.log 'Invalidating resource', doc.name
+          @cache.delete doc.name
 
   # No caching, loads fresh
   # TODO: support deps from children
@@ -14,13 +75,16 @@ root.DustInjector = class DustInjector
   # package:name - from a dep
   # ($name - system resource?)
   load: (name) ->
-    #console.log 'injecting', name
+    console.group 'Injecting', name
 
     if ':' in name
       [pkg, subName] = name.split(':')
       if val = BUILTINS[pkg]?[subName]
+        console.log 'Using builtin'
+        console.groupEnd()
         return val
 
+      console.groupEnd()
       throw new Meteor.Error 'not-found',
         "Failed to inject #{name} - builtin does not exist"
 
@@ -28,15 +92,24 @@ root.DustInjector = class DustInjector
       packageId: @packageId
       name: name
 
-    unless resource then throw new Meteor.Error 'not-found',
-      "Failed to inject #{name} - name could not be resolved"
+    unless resource
+      console.groupEnd()
+      throw new Meteor.Error 'not-found',
+        "Failed to inject #{name} - name could not be resolved"
 
+    final = switch resource.type
+      when 'CustomRecord'
+        @_injectCR(resource)
+      when 'Template'
+        Template[compileTemplate(resource)]
+      else
+        console.groupEnd()
+        throw new Meteor.Error 'not-implemented',
+          "#{name} was a #{resource.type} but I have no recipe for that"
+
+    console.groupEnd()
     type: resource.type
-    final: switch resource.type
-      when 'CustomRecord' then @_injectCR(resource)
-      else throw new Meteor.Error 'not-implemented',
-        "#{name} was a #{resource.type} but I have no recipe for that"
-
+    final: final
 
   get: (name, typeAssertion) ->
     unless val = @cache.get(name)
@@ -63,8 +136,7 @@ root.DustInjector = class DustInjector
         when 'core:number' then Number
         when 'core:boolean' then Boolean
         when 'core:date' then Date
-        else throw new Meteor.Error 'field-type-error',
-          "Record field type #{type} isn't a thing"
+        else @get field.type, 'CustomRecord'
       bareType = [bareType] if field.isList
 
       fields[field.key] =
@@ -74,7 +146,7 @@ root.DustInjector = class DustInjector
         default: -> if field.default
           JSON.parse field.default
 
-    behaviors: {}
+    behaviors = {}
     if res.timestamp
       behaviors.timestamp = {}
     if res.slugField?
