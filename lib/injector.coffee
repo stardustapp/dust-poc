@@ -141,12 +141,13 @@ root.DustInjector = class DustInjector
         else @get field.type, 'CustomRecord'
       bareType = [bareType] if field.isList
 
-      fields[field.key] =
+      fields[field.key] = ((field) ->
         type: bareType
         optional: field.optional
         immutable: field.immutable
         default: -> if field.default
           JSON.parse field.default
+      )(field)
 
     behaviors = {}
     if res.timestamp
