@@ -7,7 +7,10 @@ DB.Record.extend helpers:
 
     Meteor.call '/records/commit', @raw(), (err, res) =>
       if err
-        alert err
+        if alert?
+          alert err
+        else
+          console.log err.message
         cb? err
       else
         @version = res.version

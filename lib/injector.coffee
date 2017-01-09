@@ -104,6 +104,8 @@ root.DustInjector = class DustInjector
         @_injectCR(resource)
       when 'Template'
         Template[compileTemplate(resource)]
+      when 'ServerMethod'
+        resource
       else
         console.groupEnd?()
         throw new Meteor.Error 'not-implemented',

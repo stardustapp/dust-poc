@@ -14,16 +14,6 @@ DB.Resource = Astro.Class.create
     version   : type: Number
     # injects   : type: [String]
 
-DB.Table = DB.Resource.inherit
-  name: 'Table'
-  fields:
-    #dataScope : type: String, optional: true
-          # global, group, user
-    hashKey   : type: String, immutable: true
-    sortKey   : type: String, immutable: true, optional: true
-    # fields    : type: [DB.TableField], defaultValue: []
-
-
 ################
 ## Route tables
 
@@ -48,7 +38,7 @@ DB.RouteTable = DB.Resource.inherit
   name: 'RouteTable'
   fields:
     layout    : type: String, optional: true
-    entries   : type: [DB.RouteTableEntry], default: []
+    entries   : type: [DB.RouteTableEntry], default: -> []
 
 ################
 ## UI Templates
@@ -75,7 +65,7 @@ DB.Template = DB.Resource.inherit
     html      : type: String, default: '<div>\n  Hello World\n</div>'
     css       : type: String, optional: true
     scss      : type: String, optional: true
-    scripts   : type: [DB.TemplateScript], default: []
+    scripts   : type: [DB.TemplateScript], default: -> []
   events:
     beforeSave: (evt) -> if Meteor.isServer
       evt.target.css = if evt.target.scss
@@ -112,9 +102,20 @@ DB.CustomRecord = DB.Resource.inherit
   fields:
     base      : type: String, default: 'core:Record'
     dataScope : type: String, default: 'global' # or group or user
-    fields    : type: [DB.RecordField], default: []
+    fields    : type: [DB.RecordField], default: -> []
 
     # Behaviors
     # TODO: need to be dynamic, w/ helpers
     timestamp : type: Boolean, default: false
     slugField : type: String, optional: true
+
+################
+## Server methods
+
+DB.ServerMethod = DB.Resource.inherit
+  name: 'ServerMethod'
+  fields:
+    # TODO: auth/security setting
+    coffee  : type: String, optional: true
+    js      : type: String, optional: true
+    injects : type: [String], default: -> []
