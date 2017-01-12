@@ -151,6 +151,8 @@ root.DustInjector = class DustInjector
           JSON.parse field.default
       )(field)
 
+    #console.log fields
+
     behaviors = {}
     if res.timestamp
       behaviors.timestamp = {}

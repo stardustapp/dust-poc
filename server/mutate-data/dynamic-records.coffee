@@ -1,10 +1,4 @@
-currentPackage = new Meteor.EnvironmentVariable
-
-INJECTORS = new Map
-getInjector = (packageId) ->
-  unless INJECTORS.has packageId
-    INJECTORS.set packageId, new DustInjector {packageId}
-  INJECTORS.get packageId
+#currentPackage = new Meteor.EnvironmentVariable
 
 Meteor.methods '/records/commit': (newDoc) ->
   check newDoc.packageId, String
@@ -16,11 +10,7 @@ Meteor.methods '/records/commit': (newDoc) ->
       "Can't commit record for unknown package #{newDoc.packageId}"
 
   injector = getInjector(newDoc.packageId)
-  {final, type} = injector.load(newDoc.type, 'CustomRecord')
-  if type isnt 'CustomRecord'
-    throw new Meteor.Error 'dag-failed',
-      "Expected #{newDoc.type} to be a CustomRecord but got #{type}"
-  clazz = final
+  clazz = injector.get(newDoc.type, 'CustomRecord')
 
   isNew = not newDoc.version
   if newDoc.version
@@ -49,8 +39,8 @@ Meteor.methods '/records/commit': (newDoc) ->
 
   rec.version += 1
   rec.save()
-  console.log 'Stored version', rec.version, 'of', rec._id,
-    'type', rec.type, 'pkg', rec.packageId
+  #console.log 'Stored version', rec.version, 'of', rec._id,
+  #  'type', rec.type, 'pkg', rec.packageId
 
   version: rec.version
   id: rec._id
