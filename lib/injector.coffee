@@ -66,9 +66,13 @@ root.DustInjector = class DustInjector
       .observe
         changed: (doc) =>
           console.log 'Invalidating resource', doc.name
+          if {dep} = @cache.get doc.name
+            dep.changed()
           @cache.delete doc.name
         removed: (doc) =>
           console.log 'Invalidating resource', doc.name
+          if {dep} = @cache.get doc.name
+            dep.changed()
           @cache.delete doc.name
 
   # No caching, loads fresh
@@ -114,11 +118,13 @@ root.DustInjector = class DustInjector
     console.groupEnd?()
     type: resource.type
     final: final
+    dep: new Tracker.Dependency
 
   get: (name, typeAssertion) ->
     unless val = @cache.get(name)
       val = @load name
       @cache.set name, val
+    val.dep?.depend()
 
     if typeAssertion?
       if val.type isnt typeAssertion
