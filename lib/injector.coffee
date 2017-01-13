@@ -67,12 +67,12 @@ root.DustInjector = class DustInjector
         changed: (doc) =>
           console.log 'Invalidating resource', doc.name
           if {dep} = @cache.get doc.name
-            dep.changed()
+            dep?.changed()
           @cache.delete doc.name
         removed: (doc) =>
           console.log 'Invalidating resource', doc.name
           if {dep} = @cache.get doc.name
-            dep.changed()
+            dep?.changed()
           @cache.delete doc.name
 
   # No caching, loads fresh
