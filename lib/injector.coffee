@@ -50,7 +50,9 @@ root.DustInjector = class DustInjector
                   val2 = val()
                   # TODO: when is this an array?
                   val2 = val2[0] if val2.length
-                  data[key] = val2()
+                  # this is not a function when the value is a helper tag
+                  val2 = val2() if val2.constructor is Function
+                  data[key] = val2
                 else data[key] = val
               inSmartTag = false
               return data
