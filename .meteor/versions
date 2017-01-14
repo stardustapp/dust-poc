@@ -49,6 +49,7 @@ launch-screen@1.1.0
 livedata@1.0.18
 logging@1.1.16
 manuel:reactivearray@1.0.5
+markdown@1.0.11
 mdg:validation-error@0.5.1
 meteor@1.6.0
 meteor-base@1.0.4
