@@ -28,4 +28,4 @@ DB.ServerMethod.extend events:
 
     # rebind `this` to DUST
     coffee = 'DUST = @;\n' + coffee
-    meth.js = Meteor.call 'compileCoffee', coffee, 'function'
+    meth.js = compileCoffeeFunction(coffee)
