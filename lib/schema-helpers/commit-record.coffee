@@ -7,7 +7,7 @@ DB.Record.extend helpers:
     # TODO: validate locally
 
     # Only use callbacks on the client
-    cb = if alert? then (err, res) =>
+    cb2 = if alert? then (err, res) =>
       if err
         alert err
         cb? err
@@ -16,7 +16,7 @@ DB.Record.extend helpers:
         @_id = res.id
         cb? null, res
 
-    res = Meteor.call '/records/commit', @raw(), cb
+    res = Meteor.call '/records/commit', @raw(), cb2
     if Meteor.isServer
       @version = res.version
       @_id = res.id
