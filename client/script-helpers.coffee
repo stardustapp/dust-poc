@@ -1,88 +1,3 @@
-class Document
-  constructor: (@table, @record) ->
-    console.log @table, @record
-
-class Table
-  constructor: (@name) ->
-
-  meta: ->
-    unless @_meta ?= DB.Table.findOne {@name}
-      throw new Error "No such table #{@name}"
-    return @_meta
-
-  # Find single doc by hashKey and sortKey if any
-  findOne: (hashKey, sortKey) ->
-    mongoFilter =
-      packageId: @meta().packageId
-      table: @meta().name
-      hashKey: hashKey
-
-    if @_meta().sortKey
-      mongoFilter.sortKey = sortKey
-      unless sortKey
-        throw new Error "Sort key #{@_meta().sortKey} required for #{@name}"
-    unless hashKey
-      throw new Error "Sort key #{@_meta().sortKey} required for #{@name}"
-
-    if record = DB.Record.findOne(mongoFilter)
-      new Document(@, record)
-
-  # Find single doc by hashKey
-  findByHashKey: (hashKey) ->
-    DB.Record.findOne
-      packageId: @meta().packageId
-      table: @meta().name
-      hashKey: hashKey
-    ?.data
-
-  # Find single doc by hashKey and sortKey
-  findByHashSortKey: (hashKey, sortKey) ->
-    DB.Record.findOne
-      packageId: @meta().packageId
-      table: @meta().name
-      hashKey: hashKey
-      sortKey: sortKey
-    ?.data
-
-  # List child docs by sortKey
-  queryByHashKey: (hashKey) ->
-    DB.Record.find
-      packageId: @meta().packageId
-      table: @meta().name
-      hashKey: hashKey
-    , sort: {sortKey: 1}
-    .map (rec) -> rec.data
-
-  # List all docs
-  scan: ->
-    DB.Record.find
-      packageId: @meta().packageId
-      table: @meta().name
-    , sort: {sortKey: 1}
-    .map (rec) -> rec.data
-
-  insertDoc: (doc) ->
-    rec = new DB.Record
-      packageId: @meta().packageId
-      table: @meta().name
-      scope: 'global' # TODO!
-      hashKey: doc[@meta().hashKey]
-      data: doc
-
-    unless rec.hashKey
-      throw new Error "
-        Hash key #{@meta().hashKey} is required for #{@meta().name}"
-
-    if @meta().sortKey
-      unless rec.sortKey = doc[@meta().sortKey]
-        throw new Error "
-          Sort key #{@meta().sortKey} is required for #{@meta().name}"
-
-    rec.save()
-    return rec.data
-
-# Simple caching
-TABLES = {}
 INJECTOR = new DustInjector
   packageId: APP_ID
 
@@ -107,9 +22,6 @@ root.DUST = root.scriptHelpers =
 
   get: (name, type) ->
     INJECTOR.get(name, type)
-
-  getTable: (name) ->
-    TABLES[name] ?= new Table(name)
 
   navigateTo: (path) ->
     if SUBDOMAIN_APPS # app is in subdomain
