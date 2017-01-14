@@ -109,6 +109,17 @@ DB.CustomRecord = DB.Resource.inherit
     timestamp : type: Boolean, default: false
     slugField : type: String, optional: true
 
+# TODO: publish-composite (nested publish)
+DB.Publication = DB.Resource.inherit
+  name: 'Publication'
+  fields:
+    # TODO: security, auth check
+    recordType : type: String, default: 'core:Record'
+    filterBy   : type: String, optional: true
+    sortBy     : type: String, optional: true
+    fields     : type: String, optional: true
+    limitTo    : type: Number, optional: true
+
 ################
 ## Server methods
 

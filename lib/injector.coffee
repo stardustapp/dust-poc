@@ -67,13 +67,13 @@ root.DustInjector = class DustInjector
       .find {@packageId}, fields: {name: 1, version: 1}
       .observe
         changed: (doc) =>
-          console.log 'Invalidating resource', doc.name
           if entry = @cache.get doc.name
+            console.log 'Invalidating resource', doc.name
             entry.dep?.changed()
           @cache.delete doc.name
         removed: (doc) =>
-          console.log 'Invalidating resource', doc.name
           if entry = @cache.get doc.name
+            console.log 'Invalidating resource', doc.name
             entry.dep?.changed()
           @cache.delete doc.name
 
@@ -111,7 +111,9 @@ root.DustInjector = class DustInjector
       when 'Template'
         Template[compileTemplate(resource)]
       when 'ServerMethod'
-        resource
+        resource # TODO: return call interface
+      when 'Publication'
+        @_injectPub(resource)
       else
         console.groupEnd?()
         throw new Meteor.Error 'not-implemented',
@@ -182,3 +184,35 @@ root.DustInjector = class DustInjector
       behaviors: behaviors
 
     clazz
+
+  _injectPub: (res) ->
+    recordType = @get res.recordType, 'CustomRecord'
+
+    # TODO: just precache all records in general for inheritance
+    for {name} in DB.CustomRecord.find({@packageId}).fetch()
+      @get name, 'CustomRecord'
+
+    find: (params={}) =>
+      opts = {}
+      if res.sortBy?.length > 2
+        opts.sort = JSON.parse(res.sortBy)
+      if res.fields?.length > 2
+        opts.fields = JSON.parse(res.fields)
+      if res.limitTo
+        opts.limit = res.limitTo
+
+      recordType.find JSON.parse(res.filterBy), opts
+
+    subscribe: (params={}) =>
+      if Meteor.isServer
+        throw new Meteor.Error 'server-sub',
+          "Servers cannot subscribe to data publications"
+
+      if inst = Template.instance()
+        sub = inst.subscribe '/dust/publication', @packageId, res.name, params
+      else
+        sub = Meteor.subscribe '/dust/publication', @packageId, res.name, params
+
+      #sub.onError (err) ->
+      #  alert "Failed to subscribe to #{res.name}\n\n#{err}"
+      return sub

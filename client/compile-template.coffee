@@ -84,7 +84,7 @@ window.compileTemplate = (templ) ->
       [_, lineNum, charNum] = err.stack.match(/<anonymous>:(\d+):(\d+)/) ? []
       if lineNum?
         stack += "#{key} (#{lineNum}:#{charNum} for view #{templ._id})"
-        console.log stack
+        console.log err.message, stack
 
         line = js.split('\n')[lineNum-1]
         console.log 'Responsible line:', line

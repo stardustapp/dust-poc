@@ -9,13 +9,11 @@ Meteor.publish '/app-runtime', (packageId) ->
     # TODO: this is effectively auto-publish
     return [
       DB.App.find()
-      DB.Resource.find()
+      DB.Resources.find()
     ]
 
-  # TODO: this is effectively auto-publish
-  #       just scoped to the current app
   [
     DB.App.find _id: packageId
     DB.Resources.find {packageId}
-    DB.Records.find {packageId}
+    #DB.Records.find {packageId}
   ]
