@@ -186,33 +186,51 @@ root.DustInjector = class DustInjector
     clazz
 
   _injectPub: (res) ->
-    recordType = @get res.recordType, 'CustomRecord'
-
     # TODO: just precache all records in general for inheritance
     for {name} in DB.CustomRecord.find({@packageId}).fetch()
       @get name, 'CustomRecord'
 
-    find: (params={}) =>
-      opts = {}
-      if res.sortBy?.length > 2
-        opts.sort = JSON.parse(res.sortBy)
-      if res.fields?.length > 2
-        opts.fields = JSON.parse(res.fields)
-      if res.limitTo
-        opts.limit = res.limitTo
+    return new RecordPublication res, @
 
-      recordType.find JSON.parse(res.filterBy), opts
+class RecordPublication
+  constructor: (@res, @injector) ->
+    @recordType = @injector.get @res.recordType, 'CustomRecord'
 
-    subscribe: (params={}) =>
-      if Meteor.isServer
-        throw new Meteor.Error 'server-sub',
-          "Servers cannot subscribe to data publications"
+  find: (params={}, parents=[]) ->
+    opts = {}
+    if @res.sortBy?.length > 2
+      opts.sort = JSON.parse(@res.sortBy)
+    if @res.fields?.length > 2
+      opts.fields = JSON.parse(@res.fields)
+    if @res.limitTo
+      opts.limit = @res.limitTo
 
-      if inst = Template.instance()
-        sub = inst.subscribe '/dust/publication', @packageId, res.name, params
-      else
-        sub = Meteor.subscribe '/dust/publication', @packageId, res.name, params
+    filterBy = JSON.parse(@res.filterBy)
+    # TODO: recursive
+    for key, val of filterBy
+      if val?.$param?
+        filterBy[key] = params[val.$param]
+      else if val?.$parent?
+        filterBy[key] = parents[val.$parent][val.$field ? '_id']
+    #console.log 'filtering by', filterBy
 
-      #sub.onError (err) ->
-      #  alert "Failed to subscribe to #{res.name}\n\n#{err}"
-      return sub
+    @recordType.find filterBy, opts
+
+  subscribe: (params={}) ->
+    unless @res.packageId
+      throw new Meteor.Error 'nested-pub-sub',
+        "Only top-level publications can be subscribed to"
+
+    if Meteor.isServer
+      throw new Meteor.Error 'server-sub',
+        "Servers cannot subscribe to data publications"
+
+    if inst = Template.instance()
+      inst.subscribe '/dust/publication', @res.packageId, @res.name, params
+    else
+      console.warn 'Using application-wide subscribe for', @res.name
+      Meteor.subscribe '/dust/publication', @res.packageId, @res.name, params
+
+  children: ->
+    @res.children.map (c) =>
+      new RecordPublication c, @injector
