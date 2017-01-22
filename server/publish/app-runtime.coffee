@@ -8,10 +8,11 @@ Meteor.publish '/app-runtime', (packageId) ->
   if packageId.startsWith 'build'
     # TODO: this is effectively auto-publish
     return [
-      DB.App.find()
+      DB.Package.find()
       DB.Resources.find()
     ]
 
+  # TODO: include deps
   [
     DB.App.find _id: packageId
     DB.Resources.find {packageId}
