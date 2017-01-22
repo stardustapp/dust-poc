@@ -211,8 +211,12 @@ class RecordPublication
       if val?.$param?
         filterBy[key] = params[val.$param]
       else if val?.$parent?
-        filterBy[key] = parents[val.$parent][val.$field ? '_id']
-    #console.log 'filtering by', filterBy
+        filterBy[key] = if val.$field?.includes '[].'
+          [ary, key2] = val.$field.split '[].'
+          $in: parents[val.$parent][ary].map (x) -> x[key2]
+        else
+          parents[val.$parent][val.$field ? '_id']
+    console.log 'filtering by', filterBy
 
     @recordType.find filterBy, opts
 
