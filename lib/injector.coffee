@@ -150,6 +150,7 @@ root.DustInjector = class DustInjector
         when 'core:number' then Number
         when 'core:boolean' then Boolean
         when 'core:date' then Date
+        when 'core:object' then Object
         else @get field.type, 'CustomRecord'
       bareType = [bareType] if field.isList
 
