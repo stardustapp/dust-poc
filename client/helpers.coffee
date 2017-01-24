@@ -2,8 +2,8 @@ Template.registerHelper 'eq',
   (a, b) -> a is b
 
 Template.registerHelper 'renderTemplate', ->
-  packageId = APP_ID
-  if template = DB.Template.findOne({@name, packageId})
-    name = compileTemplate template._id
-    return Template[name]
-  null
+  try
+    DUST.get(@name, 'Template')
+  catch err
+    console.log "Failed to render template", @name, err.message
+    return null
