@@ -214,7 +214,7 @@ class RecordPublication
       else if val?.$parent?
         filterBy[key] = if val.$field?.includes '[].'
           [ary, key2] = val.$field.split '[].'
-          $in: parents[val.$parent][ary].map (x) -> x[key2]
+          $in: parents[val.$parent][ary]?.map((x) -> x[key2]) ? []
         else
           parents[val.$parent][val.$field ? '_id']
     console.log 'filtering by', filterBy
