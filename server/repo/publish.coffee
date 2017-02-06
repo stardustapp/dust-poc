@@ -17,23 +17,23 @@ Meteor.methods 'publish package': (packageId) ->
     throw new Meteor.Error 'no-package',
       "Package #{packageId} doesn't exist"
 
-  console.info 'Fetched package resources!'
+  console.debug 'Fetched package resources!'
   delete pkg.meta._id
 
-  console.info 'Serializing package contents...'
+  console.debug 'Serializing package contents...'
   fullPkg = JSON.stringify(pkg, null, 2)
   pkg.meta.stardustVersion = pkg._version
   metaPkg = JSON.stringify(pkg.meta, null, 2)
 
   # TODO: only reupload meta if changed
-  console.info 'Uploading package metadata...'
+  console.debug 'Uploading package metadata...'
   s3.putObjectSync
     Bucket: 'stardust-repo'
     Key: "packages/#{packageId}.meta.json"
     Body: metaPkg
     ACL: 'bucket-owner-full-control'
 
-  console.info 'Uploading package contents...'
+  console.debug 'Uploading package contents...'
   s3.putObjectSync
     Bucket: 'stardust-repo'
     Key: "packages/#{packageId}.json"
