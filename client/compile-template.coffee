@@ -10,6 +10,11 @@ Blaze.Template.prototype.registerHook = (key, hook) ->
     throw new Meteor.Error 'hook-exists', "Template hook already exists"
   @hooks[key] = hook
 
+# Coffeescript now wraps eval() like so:
+# module.runModuleSetters(eval(compiled))
+module =
+  runModuleSetters: (x) -> x
+
 window.compileTemplate = (templ) ->
   unless templ.html?
     templ = DB.Template.findOne templ, fields:
