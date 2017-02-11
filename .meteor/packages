@@ -19,21 +19,21 @@ standard-minifier-js@1.2.1    # JS minifier run for production mode
 shell-server@0.2.1            # Server-side component of the `meteor shell` command
 
 iron:router
-coffeescript
+coffeescript@1.11.1_4
 momentjs:moment
 shreks7:coffee-compiler
 perak:codemirror
 jagi:astronomy
 fourseven:scss
 spacebars-compiler
-random
-session
+random@1.0.10
+session@1.1.7
 peerlibrary:aws-sdk
-check
+check@1.2.4
 manuel:reactivearray
 barbatus:scss-compiler
 jagi:astronomy-timestamp-behavior
 jagi:astronomy-slug-behavior
-markdown
+markdown@1.0.11
 reywood:publish-composite
-http
+http@1.2.10
