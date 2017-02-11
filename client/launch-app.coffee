@@ -111,3 +111,12 @@ else if APP_ID
   # Let the client reload when switching apps
   Router.route "/~#{APP_ID}/:path(.*)", ->
     launchApp.call @, APP_ID
+
+if APP_ID
+  Meteor.autorun ->
+    app = DB.App.findOne(APP_ID)
+
+  Meteor.setTimeout ->
+    Meteor.autorun ->
+      DUST.get('Default', 'Publication')?.subscribe()
+  , 10

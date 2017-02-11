@@ -217,6 +217,11 @@ class RecordPublication
           $in: parents[val.$parent][ary]?.map((x) -> x[key2]) ? []
         else
           parents[val.$parent][val.$field ? '_id']
+
+    # TODO: more security
+    if Meteor.isServer
+      filterBy.packageId = @injector.packageId
+
     console.log 'filtering by', filterBy
 
     @recordType.find filterBy, opts
