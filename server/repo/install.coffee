@@ -24,7 +24,8 @@ Meteor.methods '/repo/install-package': (packageId) ->
   console.debug 'Creating new package resources'
   for resource in pkg.resources
     resource.packageId = packageId
-    DB[resource.type].insert resource
+    # TODO: report when this fails
+    DB[resource.type]?.insert resource
 
   console.info 'Done installing package', packageId, '!!'
   return 'Installed'
