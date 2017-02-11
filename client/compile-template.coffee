@@ -10,9 +10,10 @@ Blaze.Template.prototype.registerHook = (key, hook) ->
     throw new Meteor.Error 'hook-exists', "Template hook already exists"
   @hooks[key] = hook
 
-# Coffeescript now wraps eval() like so:
-# module.runModuleSetters(eval(compiled))
-module =
+# Coffeescript now wraps random things like so:
+# thing = module.runModuleSetters(eval(compiled))
+# Seems related to ES6. Just bypass for now.
+window.module =
   runModuleSetters: (x) -> x
 
 window.compileTemplate = (templ) ->
