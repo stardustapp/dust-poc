@@ -116,7 +116,6 @@ if APP_ID
   Meteor.autorun ->
     app = DB.App.findOne(APP_ID)
 
-  Meteor.setTimeout ->
-    Meteor.autorun ->
-      DUST.get('Default', 'Publication')?.subscribe()
-  , 10
+  # Wait for the application to download, then attempt auto-sub
+  Meteor.autorun -> if SUBSCRIPTION.ready()
+    DUST.get('Default', 'Publication')?.subscribe()
