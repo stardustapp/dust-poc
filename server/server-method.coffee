@@ -1,6 +1,6 @@
 Meteor.methods '/dust/method': (appId, methName, args...) ->
   injector = getInjector appId
-  method = injector.get methName, 'ServerMethod'
+  method = injector.getSource methName, 'ServerMethod'
 
   scriptHelpers =
     get: (name, type) ->
