@@ -16,9 +16,9 @@ root.DustInjector = class DustInjector
     if Meteor.isClient
       # how bad is this?
       realMustache = Spacebars.mustache.bind(Spacebars)
-      inSmartTag = false
+      RenderSmartTag.inSmartTag = false
       Spacebars.mustache = (thing...) ->
-        if inSmartTag then thing else realMustache(thing...)
+        if RenderSmartTag.inSmartTag then thing else realMustache(thing...)
 
       HTML.getSmartTag = RenderSmartTag.bind(@)
 

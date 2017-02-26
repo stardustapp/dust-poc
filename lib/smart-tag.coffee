@@ -22,7 +22,7 @@ root.RenderSmartTag = (view, name) ->
     if attrs
       Blaze.With ->
         data = {}
-        inSmartTag = true
+        RenderSmartTag.inSmartTag = true
         for key, val of attrs
           if val.constructor is Function
             val2 = val()
@@ -32,7 +32,7 @@ root.RenderSmartTag = (view, name) ->
             val2 = val2() if val2.constructor is Function
             data[key] = val2
           else data[key] = val
-        inSmartTag = false
+        RenderSmartTag.inSmartTag = false
         return data
       , ->
         Spacebars.include template, ->
