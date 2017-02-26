@@ -1,16 +1,17 @@
 # Call a hook on an instance
-Blaze.TemplateInstance.prototype.hook = (key, args...) ->
+Blaze?.TemplateInstance.prototype.hook = (key, args...) ->
   check key, String
   {hooks} = @view.template
   hooks[key]?.apply @, args
 
 # Register hooks on a template
-Blaze.Template.prototype.registerHook = (key, hook) ->
+Blaze?.Template.prototype.registerHook = (key, hook) ->
   if key of @hooks
     throw new Meteor.Error 'hook-exists', "Template hook already exists"
   @hooks[key] = hook
 
-window.compileTemplate = (templ) ->
+InjectorTypes.set 'Template', (res) ->
+  ###
   unless templ.html?
     templ = DB.Template.findOne templ, fields:
       name: 1
@@ -18,16 +19,17 @@ window.compileTemplate = (templ) ->
       css: 1
       scripts: 1
       version: 1
-  return unless templ?.html
-  name = ['Tmpl', templ._id, templ.version].join '_'
+  ###
+  return unless res?.html
+  name = ['Tmpl', res._id, res.version].join '_'
 
   # We have versioning, that lets us reuse
   if name of Template
-    return name
+    return Template[name]
 
-  parts = [templ.html]
-  if templ.css
-    parts.push "<style type='text/css'>#{templ.css}</style>"
+  parts = [res.html]
+  if res.css
+    parts.push "<style type='text/css'>#{res.css}</style>"
 
   source = parts.join '\n\n'
   try
@@ -41,7 +43,7 @@ window.compileTemplate = (templ) ->
     renderer = eval(compiled)
     UI.Template.__define__ name, renderer
   catch err
-    console.log 'Error compiling', templ._id, 'template:', templ
+    console.log 'Error compiling', res._id, 'template:', res
     console.log err
     return
     # TODO: report error
@@ -55,11 +57,11 @@ window.compileTemplate = (templ) ->
   ###
 
   # register template for outside hooking
-  unless DUST._liveTemplates.has templ.name
-    DUST._liveTemplates.set templ.name,
+  unless DUST._liveTemplates.has res.name
+    DUST._liveTemplates.set res.name,
       dep: new Tracker.Dependency()
       instances: new Set()
-  liveSet = DUST._liveTemplates.get templ.name
+  liveSet = DUST._liveTemplates.get res.name
 
   # init hook system
   Template[name].hooks = {}
@@ -70,7 +72,7 @@ window.compileTemplate = (templ) ->
     liveSet.instances.delete @
     liveSet.dep.changed()
 
-  templ.scripts.forEach ({key, type, param, js}) ->
+  res.scripts.forEach ({key, type, param, js}) ->
     try
       inner = eval(js).apply(window.scriptHelpers)
     catch err
@@ -83,7 +85,7 @@ window.compileTemplate = (templ) ->
       stack = err.stack.split('Object.eval')[0]
       [_, lineNum, charNum] = err.stack.match(/<anonymous>:(\d+):(\d+)/) ? []
       if lineNum?
-        stack += "#{key} (#{lineNum}:#{charNum} for view #{templ._id})"
+        stack += "#{key} (#{lineNum}:#{charNum} for view #{res._id})"
         console.log err.message, stack
 
         line = js.split('\n')[lineNum-1]
@@ -125,6 +127,6 @@ window.compileTemplate = (templ) ->
     Session.set 'display-context', {}
   ###
 
-  Template[name].baseName = templ.name
+  Template[name].baseName = res.name
   Template[name].dynName = name
-  return name
+  return Template[name]
