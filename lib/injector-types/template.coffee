@@ -82,8 +82,8 @@ InjectorTypes.set 'Template', (res) ->
     func = -> try
       inner.apply(@, arguments)
     catch err
-      stack = err.stack.split('Object.eval')[0]
-      [_, lineNum, charNum] = err.stack.match(/<anonymous>:(\d+):(\d+)/) ? []
+      stack = err.stack?.split('Object.eval')[0]
+      [_, lineNum, charNum] = err.stack?.match(/<anonymous>:(\d+):(\d+)/) ? []
       if lineNum?
         stack += "#{key} (#{lineNum}:#{charNum} for view #{res._id})"
         console.log err.message, stack
