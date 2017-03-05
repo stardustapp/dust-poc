@@ -23,6 +23,10 @@ Meteor.methods 'publish package': (packageId) ->
   console.debug 'Serializing package contents...'
   fullPkg = JSON.stringify(pkg, null, 2)
   pkg.meta.stardustVersion = pkg._version
+  pkg.meta.requiredDependencies = pkg.resources
+    .filter (r) -> r.type is 'Dependency'
+    .filter (r) -> r.isOptional isnt true
+    .map (r) -> r.childPackage
   metaPkg = JSON.stringify(pkg.meta, null, 2)
 
   # TODO: only reupload meta if changed
