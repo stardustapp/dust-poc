@@ -12,9 +12,16 @@ Meteor.publish '/app-runtime', (packageId) ->
       DB.Resources.find()
     ]
 
-  # TODO: include deps
+  # Recursively build list of dependencies
+  packageIds = []
+  addPkg = (pkg) ->
+    return if pkg in packageIds
+    packageIds.push pkg
+    DB.Dependency.find(packageId: pkg).forEach (dep) ->
+      addPkg dep.childPackage
+  addPkg packageId
+
   [
-    DB.App.find _id: packageId
-    DB.Resources.find {packageId}
-    #DB.Records.find {packageId}
+    DB.App.find _id: $in: packageIds
+    DB.Resources.find packageId: $in: packageIds
   ]
