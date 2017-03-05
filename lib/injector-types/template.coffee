@@ -72,6 +72,8 @@ InjectorTypes.set 'Template', (res) ->
     liveSet.instances.delete @
     liveSet.dep.changed()
 
+  Template[name].injector = @
+
   res.scripts.forEach ({key, type, param, js}) ->
     try
       inner = eval(js).apply(window.scriptHelpers)

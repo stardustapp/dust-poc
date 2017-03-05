@@ -8,12 +8,12 @@ BUILTINS =
       final: Astro.Class.create(name: 'core:Class')
 
 root.DustInjector = class DustInjector
-  constructor: ({@packageId}) ->
+  constructor: ({@packageId, @parent}) ->
     @cache = new Map
     @startInvalidator()
 
     # TODO: move somewhere else, use global injector
-    if Meteor.isClient
+    if Meteor.isClient and not @parent
       # how bad is this?
       realMustache = Spacebars.mustache.bind(Spacebars)
       RenderSmartTag.inSmartTag = false
@@ -43,7 +43,10 @@ root.DustInjector = class DustInjector
   fetch: (name, typeAssertion) ->
     unless val = @cache.get(name)
       val = @load name
-      @cache.set name, val
+      # only cache in the first cache it hits
+      unless val.isCached
+        @cache.set name, val
+        val.isCached = true
     val.dep?.depend()
 
     if typeAssertion?
@@ -68,11 +71,16 @@ root.DustInjector = class DustInjector
     console.group? 'Injecting', name
 
     if ':' in name
-      [pkg, subName] = name.split(':')
-      if val = BUILTINS[pkg]?[subName]
+      [pkg, subNames...] = name.split(':')
+      if val = BUILTINS[pkg]?[subNames[0]]
         console.log 'Using builtin'
         console.groupEnd?()
         return val
+
+      if dependency = @get pkg, 'Dependency'
+        innerRes = dependency.fetch subNames.join(':')
+        console.groupEnd?()
+        return innerRes
 
       console.groupEnd?()
       throw new Meteor.Error 'not-found',

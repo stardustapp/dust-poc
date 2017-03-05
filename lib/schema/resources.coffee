@@ -146,3 +146,13 @@ DB.ServerMethod = DB.Resource.inherit
     coffee  : type: String, optional: true
     js      : type: String, optional: true
     injects : type: [String], default: -> []
+
+
+################
+## Dependencies
+
+DB.Dependency = DB.Resource.inherit
+  name: 'Dependency'
+  fields:
+    childPackage : type: String, optional: true
+    isOptional   : type: Boolean, default: false

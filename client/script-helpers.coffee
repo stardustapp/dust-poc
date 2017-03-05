@@ -21,7 +21,10 @@ root.DUST = root.scriptHelpers =
   params: new ReactiveVar {}
 
   get: (name, type) ->
-    INJECTOR.get(name, type)
+    if instance = Template?.instance()
+      instance.view.template.injector.get(name, type)
+    else
+      INJECTOR.get(name, type)
 
   navigateTo: (path) ->
     if SUBDOMAIN_APPS # app is in subdomain

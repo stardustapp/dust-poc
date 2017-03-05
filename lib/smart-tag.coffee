@@ -1,10 +1,21 @@
 root.RenderSmartTag = (view, name) ->
   return HTML.getTag(name) unless ':' in name
+
   # remove arbitrary pkglocal prefix from spacebars
   if name.slice(0, 3) is 'my:'
     name = name.slice(3)
+  else
+    name = name
+      .split ':'
+      .map (str) ->
+        str.slice(0, 1).toUpperCase() + str
+          .slice 1
+          .replace /-([a-z])/g, (d) ->
+            d[1].toUpperCase()
+      .join ':'
 
-  template = DUST.get name, 'Template'
+  injector = view.template.injector
+  template = injector.get name, 'Template'
   (args...) ->
     attrs = null
     contents = null
