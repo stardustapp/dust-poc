@@ -13,10 +13,14 @@ getAppFromHost = ->
   appId
 
 getAppFromPath = ->
+  if location.pathname is '/'
+    return 'build-launch'
+
   if firstPart = location.pathname.split('/')[1]
     if firstPart[0] is '~'
       return firstPart.slice(1)
 
+root.SUBDOMAIN_APPS = false
 if root.APP_ID = getAppFromHost()
   root.SUBDOMAIN_APPS = true
 else if root.APP_ID = getAppFromPath()
@@ -98,6 +102,9 @@ launchApp = (appId) ->
         # TODO: 500
 
       inner.apply(ctx)
+
+Router.route '/', ->
+  launchApp.call @, 'build-launch'
 
 if SUBDOMAIN_APPS
   # https://the-app.the-platform/blah
