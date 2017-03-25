@@ -33,6 +33,10 @@ InjectorTypes.set 'CustomRecord', (res) ->
       fieldName: res.slugField
 
   base = @get res.base, 'CustomRecord'
+  unless base
+    throw new Meteor.Error 'missing-base',
+      "Missing base type #{res.base} for #{res.name}"
+
   clazz = base.inherit
     name: res.name
     fields: fields

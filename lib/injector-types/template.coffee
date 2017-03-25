@@ -76,12 +76,16 @@ InjectorTypes.set 'Template', (res) ->
 
   res.scripts.forEach ({key, type, param, js}) ->
     try
-      inner = eval(js).apply(window.scriptHelpers)
+      raw = eval(js)
+      unless js.endsWith '.call();\n'
+        raw = raw.apply(window.scriptHelpers)
+      inner = raw.apply() # .apply(window.scriptHelpers) # TODO: used?
     catch err
       console.log "Couldn't compile", key, "for", name, '-', err
       return
 
     func = -> try
+      console.log 'i am', @
       inner.apply(@, arguments)
     catch err
       stack = err.stack?.split('Object.eval')[0]

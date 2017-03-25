@@ -1,3 +1,19 @@
+BUILTINS.coffeescript =
+  Compile:
+    type: 'ServerMethod'
+    final: (source, cb) ->
+      source = source.replace /\t/g, '  '
+      if cb?
+        Meteor.call '/builtin/coffeescript/compile', source, (err, obj) ->
+          obj.coffee = source if obj?
+          cb(err, obj)
+      else
+        obj = Meteor.call '/builtin/coffeescript/compile', source
+        obj.coffee = source if obj?
+        return obj
+
+return unless Meteor.isServer
+
 compileCoffee = Meteor.wrapAsync(CoffeeCompiler.compileToJS)
 compile = (source) ->
   try
@@ -5,36 +21,32 @@ compile = (source) ->
   catch err
     throw new Meteor.Error 400, 'Unable to compile script.\n' + err
 
-root.compileCoffeeFunction = (coffee) ->
+compileCoffeeFunction = (coffee) ->
   lines = coffee.split('\n')
     .map (line) -> '  ' + line
-  lines.unshift 'return ->'
+  lines.splice 0, 0, [
+    'DUST = @'
+    'return ->'
+  ]...
 
   output = compile lines.join('\n')
-  output[output.length - 2] = '}).call();'
+  output[output.length - 2] = '});'
   output.join '\n'
 
 Meteor.methods
-  compileCoffee: (coffee) ->
-    # TODO: When should this be used over 'function'?
-    #  when 'block'
-    #    output = compile(coffee)
-    #    output[output.length - 2] = '})'
-    #    output.join '\n'
-
-
-    coffee = coffee.replace /\t/g, '  '
+  '/builtin/coffeescript/compile': (sourceCoffee) ->
 
     # Process stardust directives
+    injects = []
     dirRegex = /^( *)%([a-z]+) (.+)$/im
-    coffee = coffee.replace dirRegex, (_, ws, dir, args) =>
+    coffee = sourceCoffee.replace dirRegex, (_, ws, dir, args) =>
       args = args.split(',').map (x) -> x.trim()
       lines = switch dir
         when 'inject'
           for arg in args
             # TODO: validate existance of resource?
             # TODO: validate name syntax regex!
-            #injects.push arg
+            injects.push arg
             "#{arg} = DUST.get '#{arg}'"
         else
           throw new Meteor.Error 'invalid-directive',
@@ -44,7 +56,5 @@ Meteor.methods
         .map (l) -> "#{ws}#{l}"
         .join "\n"
 
-    # rebind `this` to DUST
-    # this is only for code that runs on the server
-    #coffee = 'DUST = @;\n' + coffee
-    compileCoffeeFunction(coffee)
+    js: compileCoffeeFunction(coffee)
+    injects: injects
