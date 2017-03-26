@@ -11,15 +11,6 @@ Blaze?.Template.prototype.registerHook = (key, hook) ->
   @hooks[key] = hook
 
 InjectorTypes.set 'Template', (res) ->
-  ###
-  unless templ.html?
-    templ = DB.Template.findOne templ, fields:
-      name: 1
-      html: 1
-      css: 1
-      scripts: 1
-      version: 1
-  ###
   return unless res?.html
   name = ['Tmpl', res._id, res.version].join '_'
 
@@ -47,14 +38,6 @@ InjectorTypes.set 'Template', (res) ->
     console.log err
     return
     # TODO: report error
-
-  ###
-  Template[name].onRendered ->
-    Session.set 'is loading', false
-    Session.set 'is errored', false
-  Template[name].onDestroyed ->
-    Session.set 'is loading', true
-  ###
 
   # register template for outside hooking
   unless DUST._liveTemplates.has res.name
@@ -119,19 +102,6 @@ InjectorTypes.set 'Template', (res) ->
 
       when 'on-destroy'
         Template[name].onDestroyed func
-
-
-  ### Context hooks
-  Template[name].onCreated ->
-    @autorun =>
-      # The context hook should return an object with any of these keys:
-      #   title - What this display should be visually labeled
-      #   icon - URL to image to show in the header
-      #   color - Background color behind the content
-      Session.set 'display-context', @hook('context') ? {}
-  Template[name].onDestroyed ->
-    Session.set 'display-context', {}
-  ###
 
   Template[name].baseName = res.name
   Template[name].dynName = name

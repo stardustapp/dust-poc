@@ -66,11 +66,6 @@ DB.Template = DB.Resource.inherit
     css       : type: String, optional: true
     scss      : type: String, optional: true
     scripts   : type: [DB.TemplateScript], default: -> []
-  events:
-    beforeSave: (evt) -> if Meteor.isServer
-      evt.target.css = if evt.target.scss
-        compileSass(evt.target.scss, 'scss')
-      else null
 
 ##########################
 ## Custom Record Classes
