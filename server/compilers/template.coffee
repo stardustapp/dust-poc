@@ -3,10 +3,17 @@ DB.Template.extend events:
     tmpl = evt.target
     injector = getInjector(tmpl.packageId)
 
+    # Compile styling
+    if tmpl.scss?
+      CompileSass = injector.get 'sass:Compile'
+      res = CompileSass(tmpl.scss, 'scss')
+      tmpl.scss = res.scss
+      tmpl.css = res.css
+
+    # Compile scripting
     for script in tmpl.scripts
       switch
-
-        when script.coffee
+        when script.coffee?
           CompileCoffee = injector.get 'coffeescript:Compile'
           res = CompileCoffee(script.coffee)
 

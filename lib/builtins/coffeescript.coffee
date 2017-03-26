@@ -33,28 +33,26 @@ compileCoffeeFunction = (coffee) ->
   output[output.length - 2] = '});'
   output.join '\n'
 
-Meteor.methods
-  '/builtin/coffeescript/compile': (sourceCoffee) ->
+Meteor.methods '/builtin/coffeescript/compile': (sourceCoffee) ->
+  # Process stardust directives
+  injects = []
+  dirRegex = /^( *)%([a-z]+) (.+)$/im
+  coffee = sourceCoffee.replace dirRegex, (_, ws, dir, args) =>
+    args = args.split(',').map (x) -> x.trim()
+    lines = switch dir
+      when 'inject'
+        for arg in args
+          # TODO: validate existance of resource?
+          # TODO: validate name syntax regex!
+          injects.push arg
+          "#{arg} = DUST.get '#{arg}'"
+      else
+        throw new Meteor.Error 'invalid-directive',
+          "'#{dir}' is not a valid Stardust script directive"
 
-    # Process stardust directives
-    injects = []
-    dirRegex = /^( *)%([a-z]+) (.+)$/im
-    coffee = sourceCoffee.replace dirRegex, (_, ws, dir, args) =>
-      args = args.split(',').map (x) -> x.trim()
-      lines = switch dir
-        when 'inject'
-          for arg in args
-            # TODO: validate existance of resource?
-            # TODO: validate name syntax regex!
-            injects.push arg
-            "#{arg} = DUST.get '#{arg}'"
-        else
-          throw new Meteor.Error 'invalid-directive',
-            "'#{dir}' is not a valid Stardust script directive"
+    return lines
+      .map (l) -> "#{ws}#{l}"
+      .join "\n"
 
-      return lines
-        .map (l) -> "#{ws}#{l}"
-        .join "\n"
-
-    js: compileCoffeeFunction(coffee)
-    injects: injects
+  js: compileCoffeeFunction(coffee)
+  injects: injects
