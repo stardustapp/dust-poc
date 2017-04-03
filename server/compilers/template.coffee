@@ -7,7 +7,7 @@ DB.Template.extend events:
     if tmpl.scss?
       CompileSass = injector.get 'sass:Compile'
       res = CompileSass(tmpl.scss, 'scss')
-      tmpl.scss = res.scss
+      tmpl.scss = res.sass
       tmpl.css = res.css
 
     # Compile scripting
