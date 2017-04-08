@@ -68,7 +68,6 @@ InjectorTypes.set 'Template', (res) ->
       return
 
     func = -> try
-      console.log 'i am', @
       inner.apply(@, arguments)
     catch err
       stack = err.stack?.split('Object.eval')[0]
