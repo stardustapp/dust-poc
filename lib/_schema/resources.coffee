@@ -151,3 +151,4 @@ DB.Dependency = DB.Resource.inherit
   fields:
     childPackage : type: String, optional: true
     isOptional   : type: Boolean, default: false
+    isExtended   : type: Boolean, default: false

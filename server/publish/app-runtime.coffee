@@ -22,6 +22,6 @@ Meteor.publish '/app-runtime', (packageId) ->
   addPkg packageId
 
   [
-    DB.App.find _id: $in: packageIds
+    DB.Package.find _id: $in: packageIds
     DB.Resources.find packageId: $in: packageIds
   ]
