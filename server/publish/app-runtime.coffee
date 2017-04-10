@@ -17,8 +17,19 @@ Meteor.publish '/app-runtime', (packageId) ->
   addPkg = (pkg) ->
     return if pkg in packageIds
     packageIds.push pkg
-    DB.Dependency.find(packageId: pkg).forEach (dep) ->
+
+    DB.Dependency.find(
+      packageId: pkg
+    ).forEach (dep) ->
       addPkg dep.childPackage
+
+    # Also include packages that implicitly extend this package
+    DB.Dependency.find(
+      childPackage: pkg
+      isExtended: true
+    ).forEach (dep) ->
+      addPkg dep.packageId
+
   addPkg packageId
 
   [
