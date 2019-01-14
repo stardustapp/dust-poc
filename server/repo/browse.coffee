@@ -1,7 +1,5 @@
 Meteor.methods '/repo/list-packages': ->
-  s3 = new AWS.S3
-
-  {IsTruncated, Contents} = s3.listObjectsV2Sync
+  {IsTruncated, Contents} = anonS3 'listObjectsV2',
     Bucket: 'stardust-repo'
     Delimiter: '/'
     Prefix: 'packages/'
@@ -17,9 +15,8 @@ Meteor.methods '/repo/list-packages': ->
 
 Meteor.methods '/repo/get-package-meta': (packageId) ->
   check packageId, String
-  s3 = new AWS.S3
 
-  {Body} = s3.getObjectSync
+  {Body} = anonS3 'getObject',
     Bucket: 'stardust-repo'
     Key: "packages/#{packageId}.meta.json"
 

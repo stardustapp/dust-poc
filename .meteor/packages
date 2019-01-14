@@ -38,3 +38,4 @@ markdown@1.0.11
 reywood:publish-composite
 http@1.2.12
 peerlibrary:xml2js
+peerlibrary:blocking

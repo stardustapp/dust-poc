@@ -3,7 +3,7 @@ Meteor.methods '/repo/fetch-package': (packageId) ->
   s3 = new AWS.S3
 
   console.info 'Fetching package contents for', packageId
-  {Body} = s3.getObjectSync
+  {Body} = anonS3 'getObject',
     Bucket: 'stardust-repo'
     Key: "packages/#{packageId}.json"
 
