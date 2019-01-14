@@ -1,7 +1,7 @@
 module.exports = {
   servers: {
     one: {
-      host: 'ec2-54-218-73-71.us-west-2.compute.amazonaws.com',
+      host: 'ec2-52-36-135-46.us-west-2.compute.amazonaws.com',
       username: 'ubuntu',
       pem: '/home/daniel/.ssh/stardust.pem',
     },
