@@ -8,7 +8,7 @@ DB.Resource.extend meteorMethods:
         'of', @packageId, @name,
         '- latest is', @version, '- rejecting'
       throw new Meteor.Error 'version-conflict', "
-        The template has been edited by someone else.
+        The resource has been edited by someone else.
         Reload and try again."
 
     @remove()
