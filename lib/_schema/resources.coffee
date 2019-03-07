@@ -22,6 +22,7 @@ DB.RouteTableCustomAction = Astro.Class.create
   fields:
     coffee  : type: String
     js      : type: String
+    injects : type: [String], default: -> []
 
 # TODO: must have at least one action
 DB.RouteTableEntry = Astro.Class.create
@@ -58,6 +59,7 @@ DB.TemplateScript = Astro.Class.create
     param   : type: String, optional: true
     coffee  : type: String
     js      : type: String
+    injects : type: [String], default: -> []
 
 DB.Template = DB.Resource.inherit
   name: 'Template'
