@@ -8,7 +8,14 @@ Meteor.methods '/repo/diff-manifest': (packageId) ->
   console.info 'Preparing to diff package', packageId
 
   # Represent both packages
-  remote = Meteor.call '/repo/fetch-package', packageId
+  try
+    remote = Meteor.call '/repo/fetch-package', packageId
+  catch err
+    if err.code is 'NoSuchKey'
+      throw new Meteor.Error 'not-published',
+        "There is not a version of this package on the Marketplace yet."
+    throw err
+
   local =
     _platform: 'stardust'
     _version: 3
