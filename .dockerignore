@@ -1,0 +1,5 @@
+Dockerfile
+
+.deploy/
+.meteor/local/
+node_modules/
