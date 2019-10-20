@@ -18,7 +18,7 @@ Meteor.methods '/dust/method': (appId, methName, args...) ->
       "Couldn't compile method. #{err.name} #{err.message}"
 
   try
-    inner.apply(@, args)
+    inner().apply(@, args)
   catch err
     stack = err.stack.split('[object Object].eval')[0]
     [_, lineNum, charNum] = err.stack.match(/<anonymous>:(\d+):(\d+)/) ? []
