@@ -15,8 +15,13 @@ root.RenderSmartTag = (view, name) ->
       .join ':'
 
   injector = view.template.injector
-  template = injector.get name, 'Template'
   (args...) ->
+    try
+      template = injector.get name, 'Template'
+    catch err
+      console.log 'RenderSmartTag failed to get template:', err
+      return HTML.getTag('div')(args...)
+  
     attrs = null
     contents = null
     if args[0]?.constructor in [HTML.Attrs, Object]
