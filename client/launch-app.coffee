@@ -120,10 +120,10 @@ else if APP_ID
     launchApp.call @, APP_ID
 
 if APP_ID
-  Meteor.autorun ->
+  Tracker.autorun ->
     app = DB.App.findOne(APP_ID)
 
   # Wait for the application to download, then attempt auto-sub
-  Meteor.autorun -> if SUBSCRIPTION.ready()
+  Tracker.autorun -> if SUBSCRIPTION.ready()
     if DB.Publication.find(name: 'Default', packageId: APP_ID).count()
       DUST.get('Default', 'Publication').subscribe()

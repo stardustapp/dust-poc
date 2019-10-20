@@ -88,7 +88,12 @@ InjectorTypes.set 'Template', (res) ->
         Template[name].helpers { "#{param}": func }
 
       when 'event'
-        Template[name].events { "#{param}": func }
+        # rewrite stuff like [href=#asdf] for stricter parser
+        if match = param.match(/^([^ ]+) \[([^=]+)=([^"].+[^"])\]$/)
+          [_, evt, attr, val] = match
+          Template[name].events { "#{evt} [#{attr}=\"#{val}\"]": func }
+        else
+          Template[name].events { "#{param}": func }
 
       when 'hook'
         Template[name].registerHook param, func
