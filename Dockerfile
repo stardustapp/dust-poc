@@ -31,6 +31,6 @@ RUN cd /opt/server \
 FROM mhart/alpine-node:8
 COPY --from=build /app/bundle /app
 COPY --from=install /opt/server/node_modules /app/programs/server/node_modules
-COPY --from=install /opt/scss/node_modules /app/programs/server/npm/node_modules/meteor/barbatus_scss-compiler/node_modules
+COPY --from=install /opt/scss/node_modules/node-sass /app/programs/server/npm/node_modules/meteor/barbatus_scss-compiler/node_modules/node-sass
 WORKDIR /app
 CMD [ "node", "main.js" ]
