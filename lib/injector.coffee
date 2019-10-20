@@ -69,8 +69,10 @@ root.DustInjector = class DustInjector
         return val
 
       if dependency = @get pkg, 'Dependency'
-        innerRes = dependency.fetch subNames.join(':')
-        console.groupEnd?()
+        try
+          innerRes = dependency.fetch subNames.join(':')
+        finally
+          console.groupEnd?()
         return innerRes
 
       console.groupEnd?()
