@@ -52,6 +52,7 @@ launchApp = (appId) ->
   routeTable = DB.RouteTable.findOne
     packageId: appId
     name: 'RootRoutes' # TODO?
+  return unless routeTable
   routeTable.entries.forEach (r) ->
     r.url = new Iron.Url r.path
 
@@ -102,22 +103,26 @@ launchApp = (appId) ->
         # TODO: 500
 
       inner.apply(ctx)
+  true
 
 Router.route '/', ->
-  launchApp.call @, 'build-launch'
+  return if launchApp.call @, 'build-launch'
+  @render 'LoadingDust'
 
 if SUBDOMAIN_APPS
   # https://the-app.the-platform/blah
   # DANGER: this route will eat any 404
   # TODO: 404 if the app doesn't have the route
   Router.route '/:path(.*)', ->
-    launchApp.call @, APP_ID
+    return if launchApp.call @, APP_ID
+    @render 'LoadingDust'
 
 else if APP_ID
   # https://the-platform/~the-app/blah
   # Let the client reload when switching apps
   Router.route "/~#{APP_ID}/:path(.*)", ->
-    launchApp.call @, APP_ID
+    return if launchApp.call @, APP_ID
+    @render 'LoadingDust'
 
 if APP_ID
   Tracker.autorun ->

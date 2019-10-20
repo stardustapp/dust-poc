@@ -1,0 +1,21 @@
+#dust-loading {
+  background-color: #666;
+  color: #fff;
+  font-family: sans-serif;
+
+  flex: 1;
+  hgroup {
+    margin: 25vh 1em 2em;
+    text-align: center;
+  }
+  h2, h4, h6 {
+    font-weight: normal;
+    letter-spacing: 2px;
+  }
+  h4 {
+    color: #ccc;
+  }
+  h6 {
+    color: #999;
+  }
+}
