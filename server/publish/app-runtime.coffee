@@ -5,7 +5,10 @@
 Meteor.publish '/app-runtime', (packageId) ->
   check packageId, String
 
-  if packageId.startsWith 'build'
+  # Special-case some internal apps for privileged data
+  if packageId is 'build-launch'
+    return DB.App.find()
+  if packageId is 'build' or packageId.startsWith 'build-'
     # TODO: this is effectively auto-publish
     return [
       DB.Package.find()
