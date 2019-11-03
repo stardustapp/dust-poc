@@ -46,7 +46,7 @@ Template.body.helpers
 launchApp = (appId) ->
   # Get the app straight, first
   app = DB.App.findOne appId
-  return unless app
+  return false unless app
 
   # Fetch the app's root routing table
   routeTable = DB.RouteTable.findOne
@@ -57,8 +57,12 @@ launchApp = (appId) ->
     r.url = new Iron.Url r.path
 
   # Apply app-wide layout if any
-  if routeTable.layout
+  try if routeTable.layout
     @layout DUST.get(routeTable.layout, 'Template').dynName
+  catch err
+    console.log "Temp failed to load layout #{routeTable.layout}"
+    @render 'LoadingDustCrash'
+    return true
 
   # Find the first matching route
   {path, query} = @params
@@ -67,7 +71,7 @@ launchApp = (appId) ->
   unless route
     console.log 'No app route matched', path
     alert 'Routing 404!'
-    return
+    return false
     # TODO: 404
 
   # Build params mapping
@@ -89,20 +93,22 @@ launchApp = (appId) ->
       @render template.dynName, opts
 
   # Perform the actual action
-  switch route.type
+  try switch route.type
     when 'template'
       ctx.render route.template, route.params
 
     when 'customAction'
       # Compile the route action
-      try
-        inner = eval(route.customAction.js).apply(window.scriptHelpers)
-      catch err
-        console.log "Couldn't compile custom code for route", route, '-', err
-        return
-        # TODO: 500
-
+      inner = eval(route.customAction.js).apply(window.scriptHelpers)
       inner.apply(ctx)
+
+    else throw new Meteor.Error 'unknown-route',
+      "This route type #{route.type} is not implemented"
+
+  catch err
+    console.log "Couldn't run '#{route.type}' route action for #{route.url}"
+    @render 'LoadingDustCrash'
+    return true
   true
 
 Router.route '/', ->
