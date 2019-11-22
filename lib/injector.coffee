@@ -88,14 +88,14 @@ root.DustInjector = class DustInjector
       throw new Meteor.Error 'not-found',
         "Failed to inject #{name} - name could not be resolved"
 
-    if InjectorTypes.has resource.type
-      final = InjectorTypes.get(resource.type).call @, resource
-    else
-      console.groupEnd?()
-      throw new Meteor.Error 'not-implemented',
+    try
+      if InjectorTypes.has resource.type
+        final = InjectorTypes.get(resource.type).call @, resource
+      else throw new Meteor.Error 'not-implemented',
         "#{name} was a #{resource.type} but I have no recipe for that"
+    finally
+      console.groupEnd?()
 
-    console.groupEnd?()
     type: resource.type
     source: resource
     final: final
