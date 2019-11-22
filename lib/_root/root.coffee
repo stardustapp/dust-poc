@@ -1,11 +1,8 @@
-root = global ? window
-root.root = root
-
-root.BUILTINS = {}
-root.DB = {}
+global.BUILTINS = {}
+global.DB = {}
 
 # Coffeescript now wraps random things like so:
 # thing = module.runModuleSetters(eval(compiled))
 # Seems related to ES6. Just bypass for now.
-root.module ?=
+global.module ?=
   runModuleSetters: (x) -> x

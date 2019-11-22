@@ -1,4 +1,4 @@
-root.DustInjector = class DustInjector
+global.DustInjector = class DustInjector
   constructor: ({@packageId, @parent}) ->
     @cache = new Map
     @startInvalidator()

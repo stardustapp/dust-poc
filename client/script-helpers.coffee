@@ -1,7 +1,7 @@
 INJECTOR = new DustInjector
   packageId: APP_ID
 
-root.DUST = root.scriptHelpers =
+global.DUST = global.scriptHelpers =
   _liveTemplates: new Map
 
   triggerHook: (hookName, args...) ->

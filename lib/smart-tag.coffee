@@ -1,4 +1,4 @@
-root.RenderSmartTag = (view, name) ->
+global.RenderSmartTag = (view, name) ->
   return HTML.getTag(name) unless ':' in name
 
   # remove arbitrary pkglocal prefix from spacebars

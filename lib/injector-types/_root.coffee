@@ -1,1 +1,1 @@
-root.InjectorTypes = new Map
+global.InjectorTypes = new Map

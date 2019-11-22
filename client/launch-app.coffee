@@ -20,19 +20,19 @@ getAppFromPath = ->
     if firstPart[0] is '~'
       return firstPart.slice(1)
 
-root.SUBDOMAIN_APPS = false
-if root.APP_ID = getAppFromHost()
-  root.SUBDOMAIN_APPS = true
-else if root.APP_ID = getAppFromPath()
-  root.SUBDOMAIN_APPS = false
+global.SUBDOMAIN_APPS = false
+if global.APP_ID = getAppFromHost()
+  global.SUBDOMAIN_APPS = true
+else if global.APP_ID = getAppFromPath()
+  global.SUBDOMAIN_APPS = false
 
 console.log 'Detected app from URL:', APP_ID
 
 # TODO: subscribe to either entire app or system-wide config
 if APP_ID
-  root.SUBSCRIPTION = Meteor.subscribe '/app-runtime', APP_ID
+  global.SUBSCRIPTION = Meteor.subscribe '/app-runtime', APP_ID
 #else
-#  root.SUBSCRIPTION = Meteor.subscribe '/management'
+#  global.SUBSCRIPTION = Meteor.subscribe '/management'
 
 # Allow <a href=...> tags in apps to do the right thing
 Template.body.helpers
@@ -48,7 +48,7 @@ launchApp = (appId) ->
   app = DB.App.findOne appId
   return false unless app
 
-  # Fetch the app's root routing table
+  # Fetch the app's global routing table
   routeTable = DB.RouteTable.findOne
     packageId: appId
     name: 'RootRoutes' # TODO?
