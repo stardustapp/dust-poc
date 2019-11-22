@@ -72,13 +72,6 @@ DB.Template = DB.Resource.inherit
 ##########################
 ## Custom Record Classes
 
-DB.TemplateScriptType = Astro.Enum.create
-  name: 'TemplateScriptType'
-  identifiers: [
-    'on-render', 'on-create', 'on-destroy',
-    'helper', 'event', 'hook'
-  ]
-
 # TODO: check that Type resolves
 DB.RecordField = Astro.Class.create
   name: 'RecordField'
