@@ -34,10 +34,13 @@ InjectorTypes.set 'Template', (res) ->
     renderer = eval(compiled)
     UI.Template.__define__ name, renderer
   catch err
+    delete Template[name]
     console.log 'Error compiling', res._id, 'template:', res
-    console.log err
-    return
     # TODO: report error
+    if window.localStorage.SloppyDust
+      console.log 'Full template compile error:', err
+    else
+      throw err
 
   # register template for outside hooking
   unless DUST._liveTemplates.has res.name
@@ -64,8 +67,13 @@ InjectorTypes.set 'Template', (res) ->
         raw = raw.apply(window.scriptHelpers)
       inner = raw.apply() # .apply(window.scriptHelpers) # TODO: used?
     catch err
-      console.log "Couldn't compile", key, "for", name, '-', err
-      return
+      delete Template[name]
+      console.log "Couldn't compile", key, "for", name, '-', err.error
+      # TODO: report error
+      if window.localStorage.SloppyDust
+        console.log 'Full script compile error:', err
+      else
+        throw err
 
     func = -> try
       inner.apply(@, arguments)
