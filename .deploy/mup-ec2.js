@@ -1,9 +1,9 @@
 module.exports = {
   servers: {
     one: {
-      host: 'ec2-52-36-135-46.us-west-2.compute.amazonaws.com',
+      host: '10.69.1.12',
       username: 'ubuntu',
-      pem: '/home/daniel/.ssh/stardust.pem',
+      pem: '/home/dan/.ssh/stardust.pem',
     },
   },
 
@@ -21,7 +21,7 @@ module.exports = {
       MONGO_URL: 'mongodb://localhost/meteor'
     },
 
-    dockerImage: 'abernix/meteord:base',
+    dockerImage: 'abernix/meteord:node-8.15.1-base',
     deployCheckWaitTime: 60
   },
 
