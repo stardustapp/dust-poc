@@ -1,3 +1,24 @@
+# ONGOING MIGRATIONS!
+# for the three different 'script' models,
+#   moving from single 'coffee' field to a 'source' and 'lang' pairing
+# (started 2019-03-09)
+
+DB.ArbitraryScript = Astro.Class.create
+  name: 'ArbitraryScript'
+  fields:
+    coffee  : type: String, optional: true # deprecated
+    source  : type: String
+    lang    : type: String
+    js      : type: String
+    injects : type: [String], default: -> []
+  events:
+    afterInit: (e) ->
+      if e.target.coffee
+        e.target.source = e.target.coffee
+        e.target.lang = 'coffee'
+        delete e.target.coffee
+
+
 ##################
 ## Resources
 # Injectable code and config that defines app behavior
@@ -17,13 +38,6 @@ DB.Resource = Astro.Class.create
 ################
 ## Route tables
 
-DB.RouteTableCustomAction = Astro.Class.create
-  name: 'RouteTableCustomAction'
-  fields:
-    coffee  : type: String
-    js      : type: String
-    injects : type: [String], default: -> []
-
 # TODO: must have at least one action
 DB.RouteTableEntry = Astro.Class.create
   name: 'RouteTableEntry'
@@ -33,7 +47,7 @@ DB.RouteTableEntry = Astro.Class.create
         # template, customAction
     template     : type: String, optional: true
     # layout       : type: String, optional: true
-    customAction : type: DB.RouteTableCustomAction, optional: true
+    customAction : type: DB.ArbitraryScript, optional: true
 
 DB.RouteTable = DB.Resource.inherit
   name: 'RouteTable'
@@ -51,15 +65,12 @@ DB.TemplateScriptType = Astro.Enum.create
     'helper', 'event', 'hook'
   ]
 
-DB.TemplateScript = Astro.Class.create
+DB.TemplateScript = DB.ArbitraryScript.inherit
   name: 'TemplateScript'
   fields:
     key     : type: String
     type    : type: DB.TemplateScriptType
     param   : type: String, optional: true
-    coffee  : type: String
-    js      : type: String
-    injects : type: [String], default: -> []
 
 DB.Template = DB.Resource.inherit
   name: 'Template'
@@ -140,10 +151,19 @@ DB.ServerMethod = DB.Resource.inherit
   name: 'ServerMethod'
   fields:
     # TODO: auth/security setting
+    script  : type: DB.ArbitraryScript
+    # TODO: remove once migrated to @script
     coffee  : type: String, optional: true
+    source  : type: String, optional: true
+    lang    : type: String, optional: true
     js      : type: String, optional: true
     injects : type: [String], default: -> []
-
+  events:
+    afterInit: (e) -> if @coffee
+      @script.source = @source
+      @script.lang = 'coffee'
+      @script.js = @js
+      @script.injects = @injects
 
 ################
 ## Dependencies
