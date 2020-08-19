@@ -1,6 +1,5 @@
 Meteor.methods '/repo/fetch-package': (packageId) ->
   check packageId, String
-  s3 = new AWS.S3
 
   console.info 'Fetching package contents for', packageId
   {Body} = anonS3 'getObject',

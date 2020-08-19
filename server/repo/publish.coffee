@@ -1,3 +1,5 @@
+import { AWS } from 'meteor/peerlibrary:aws-sdk'
+
 Meteor.methods 'publish package': (packageId) ->
   check packageId, String
   s3 = new AWS.S3
