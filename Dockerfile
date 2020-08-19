@@ -12,14 +12,16 @@ RUN mkdir /app \
  && meteor build \
     --allow-superuser \
     --directory "/app"
+# move npm junk out of the way so the bundle stays lean
+RUN mv /app/bundle/programs/server/npm /server-npm
 
 # build native stuff under musl
-FROM node:12-alpine AS install
-RUN apk add --no-cache build-base python
+FROM node:12-alpine3.12 AS install
+RUN apk add --no-cache build-base python2
 
 # rebuild fibers, node-sass, etc under musl
 # meteor doesn't include the original package.json sadly
-COPY --from=build /app/bundle/programs/server/npm /opt/server/npm
+COPY --from=build /server-npm /opt/server/npm
 WORKDIR /opt/server/npm
 RUN npm rebuild
 
@@ -42,12 +44,11 @@ RUN find . -type d \( \
     -name "docs" -o \
     -name "examples" -o \
     -name "samples" -o \
-    -name "babel-compiler" -o \
     -name "phantomjs-prebuilt" \
     \) -exec rm -rf {} +
 
 # make lean app container
-FROM node:12-alpine
+FROM node:12-alpine3.12
 COPY --from=build /app/bundle /app
 COPY --from=install /opt/server/node_modules /app/programs/server/node_modules
 COPY --from=install /opt/server/npm /app/programs/server/npm
