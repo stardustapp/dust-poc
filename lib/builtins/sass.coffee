@@ -13,27 +13,37 @@ BUILTINS.sass =
         return obj
 
 return unless Meteor.isServer
+sass = Npm.require 'node-sass'
 
-sass = new SassCompiler
 Meteor.methods '/builtin/sass/compile': (source, extension) ->
   check source, String
   check extension, String
 
-  res = sass.compileOneFile
-    getDisplayPath: -> 'styling.' + extension
-    getExtension: -> extension
-    getBasename: -> 'styling'
-    getPackageName: -> 'stardust'
-    getPathInPackage: -> 'styling.' + extension
-    getContentsAsBuffer: -> new Buffer source
-    error: ({message, sourcePath}) ->
-      throw new Meteor.Error 'scss-error', message
-  , []
+  res = try
+    await new Promise (resolve, reject) -> sass.render
+      sourceMap:         true
+      sourceMapContents: true
+      sourceMapEmbed:    false
+      sourceComments:    false
+      sourceMapRoot: '.'
+      outFile: '.styling'
+      file: 'styling.'+extension
 
-  if res.referencedImportPaths.length
-    throw new Meteor.Error 'no-sass-imports', "
-      Sass imports may not be used yet"
+      indentedSyntax: extension is 'sass'
+      data: source
 
-  {css, sourceMap} = res.compileResult
+      importer: () -> throw new Error("TODO")
+      includePaths: []
+
+    , (err, out) ->
+      if err then reject(err)
+      else resolve(out)
+  catch err
+    throw new Meteor.Error 'scss-error', "Scss compiler error: #{err.message}"
+
+  # stringify buffers
+  css = res.css.toString 'utf-8'
+  sourceMap = res.map.toString 'utf-8'
+
   css: css.slice(0, css.lastIndexOf('\n')) # sourcemap comment
-  sourceMap: sourceMap
+  sourceMap: JSON.parse(sourceMap)

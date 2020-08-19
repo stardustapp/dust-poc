@@ -23,14 +23,13 @@ momentjs:moment
 shreks7:coffee-compiler
 perak:codemirror
 jagi:astronomy
-fourseven:scss@4.5.0
+fourseven:scss
 spacebars-compiler
 random@1.1.0
 session@1.2.0
 peerlibrary:aws-sdk
 check@1.3.1
 manuel:reactivearray
-barbatus:scss-compiler
 jagi:astronomy-timestamp-behavior
 jagi:astronomy-slug-behavior
 markdown@1.0.12

@@ -2,8 +2,6 @@ allow-deny@1.1.0
 autoupdate@1.6.0
 babel-compiler@7.4.2
 babel-runtime@1.4.0
-barbatus:caching-compiler@1.1.9
-barbatus:scss-compiler@3.8.3
 base64@1.0.12
 binary-heap@1.0.11
 blaze@2.3.4
