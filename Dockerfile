@@ -17,15 +17,39 @@ RUN mkdir /app \
 FROM node:12-alpine AS install
 RUN apk add --no-cache build-base python
 
-# install fibers, node-sass, etc under musl
+# rebuild fibers, node-sass, etc under musl
 # meteor doesn't include the original package.json sadly
 COPY --from=build /app/bundle/programs/server/npm /opt/server/npm
-RUN cd /opt/server/npm \
- && npm rebuild
+WORKDIR /opt/server/npm
+RUN npm rebuild
+
+# install extra packages that meteor didn't include the first time around
+COPY --from=build /app/bundle/programs/server/package.json /opt/server/
+COPY --from=build /app/bundle/programs/server/npm-shrinkwrap.json /opt/server/
+WORKDIR /opt/server
+RUN npm install --production
+
+# clean up extra junk
+RUN find . -type f \( \
+    -name "*.md" -o \
+    -name "*.markdown" -o \
+    -name "*.ts" -o \
+    -name "*.exe" \
+    \) -delete
+RUN find . -type d \( \
+    -name "*-garbage-*" -o \
+    -name ".temp-*" -o \
+    -name "docs" -o \
+    -name "examples" -o \
+    -name "samples" -o \
+    -name "babel-compiler" -o \
+    -name "phantomjs-prebuilt" \
+    \) -exec rm -rf {} +
 
 # make lean app container
 FROM node:12-alpine
 COPY --from=build /app/bundle /app
+COPY --from=install /opt/server/node_modules /app/programs/server/node_modules
 COPY --from=install /opt/server/npm /app/programs/server/npm
 WORKDIR /app
 CMD [ "node", "main.js" ]
