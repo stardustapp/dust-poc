@@ -1,5 +1,5 @@
 # node:8-buster with meteor installed
-FROM gcr.io/stardust-156404/meteor-buildenv AS build
+FROM gcr.io/stardust-156404/meteor-buildenv:node-12 AS build
 
 # grab build dependencies
 WORKDIR /src
@@ -14,23 +14,18 @@ RUN mkdir /app \
     --directory "/app"
 
 # build native stuff under musl
-FROM mhart/alpine-node:8 AS install
+FROM node:12-alpine AS install
 RUN apk add --no-cache build-base python
 
-# rebuild sass under musl
-COPY --from=build /app/bundle/programs/server/npm/node_modules/meteor/barbatus_scss-compiler/node_modules /opt/scss/node_modules
-RUN cd /opt/scss/node_modules \
- && npm rebuild node-sass
-
-# install fibers, etc under musl
-COPY --from=build /app/bundle/programs/server/package.json /opt/server/
-RUN cd /opt/server \
- && npm install --production
+# install fibers, node-sass, etc under musl
+# meteor doesn't include the original package.json sadly
+COPY --from=build /app/bundle/programs/server/npm /opt/server/npm
+RUN cd /opt/server/npm \
+ && npm rebuild
 
 # make lean app container
-FROM mhart/alpine-node:8
+FROM node:12-alpine
 COPY --from=build /app/bundle /app
-COPY --from=install /opt/server/node_modules /app/programs/server/node_modules
-COPY --from=install /opt/scss/node_modules/node-sass /app/programs/server/npm/node_modules/meteor/barbatus_scss-compiler/node_modules/node-sass
+COPY --from=install /opt/server/npm /app/programs/server/npm
 WORKDIR /app
 CMD [ "node", "main.js" ]
